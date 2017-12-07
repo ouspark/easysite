@@ -16,54 +16,45 @@ object App extends JSApp {
 
   @dom
   def layout: Binding[BindingSeq[Node]] = {
-    Constants(menu, mainDiv).flatMap(_.bind)
-  }
-
-  def toggleClass(ele: Element, className: String) = {
-    if (ele.classList.contains(className)) {
-      ele.classList.remove(className)
-    } else {
-      ele.classList.add(className)
-    }
-  }
-
-  def toggleAll(e: Event) = {
-    val active = "active"
-    e.preventDefault()
-    toggleClass(document.getElementById("layout"), active)
-    toggleClass(document.getElementById("menu"), active)
-    toggleClass(document.getElementById("menuLink"), active)
+    Constants(header, mainDiv).flatMap(_.bind)
   }
 
   @dom
-  def menu: Binding[BindingSeq[Node]] = {
-    <a href="#menu" id="menuLink" class="menu-link" onclick={event: Event => toggleAll(event)}>
-      <!-- Hamburger icon -->
-      <span></span>
-    </a>
-    <div id="menu">
-      <div class="pure-menu">
-        <a class="pure-menu-heading" href="#">Company</a>
+  def header: Binding[BindingSeq[Node]] = {
+    <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">CP Admin</a>
+        <button class="navbar-toggler d-lg-none" type="button" data:data-toggle="collapse" data:data-target="#navbarsExampleDefault" data:aria-controls="navbarsExampleDefault" data:aria-expanded="false" data:aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <ul class="pure-menu-list">
-          {
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav mr-auto">
+            {
             Constants(SpaceRoute.routes: _*).map { s =>
-              val className = if (SpaceRoute.pages.bind.name == s.name) "pure-menu-item menu-item-divided pure-menu-selected" else "pure-menu-item"
+              val className = if (SpaceRoute.pages.bind.name == s.name) "nav-item active" else "nav-item"
               <li class={className}>
-                <a href={s.link} class="pure-menu-link">{s.name.capitalize}</a>
+                <a href={s.link} class="nav-link">{s.name.capitalize}</a>
               </li>
             }
-          }
-        </ul>
-      </div>
-    </div>
+            }
+          </ul>
+          <form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" data:aria-label="Search" />
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+    <!-- -->
   }
 
   @dom
   def mainDiv: Binding[BindingSeq[Node]] = {
-    <div id="main" onclick={ event: Event => if (document.getElementById("menu").classList.contains("active")) toggleAll(event) }>
+    <div class="container-fluid">
       { SpaceRoute.pages.bind.render.bind }
     </div>
     <!-- -->
   }
+
 }
