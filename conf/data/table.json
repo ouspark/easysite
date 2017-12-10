@@ -1,0 +1,91 @@
+{
+  "export": {
+    "recordtype": [
+      {
+        "id": 1,
+        "name": "cap",
+        "label": "Record Type"
+      },
+      {
+        "id": 2,
+        "name": "alias",
+        "label": "Record Type Alias"
+      },
+      {
+        "id": 3,
+        "name": "module",
+        "label": "Module"
+      },
+      {
+        "id": 4,
+        "name": "status",
+        "label": "Status"
+      }
+    ],
+    "asi": [
+      {
+        "id": 1,
+        "name": "asi",
+        "label": "Application Spec Info"
+      },
+      {
+        "id": 2,
+        "name": "group",
+        "label": "Group"
+      },
+      {
+        "id": 3,
+        "name": "module",
+        "label": "Module"
+      },
+      {
+        "id": 4,
+        "name": "status",
+        "label": "Status"
+      }
+    ]
+
+  },
+  "import": {
+    "recordtype": [
+      {
+        "id": 1,
+        "name": "cap",
+        "label": "Record Type"
+      },
+      {
+        "id": 2,
+        "name": "alias",
+        "label": "Record Type Alias"
+      },
+      {
+        "id": 3,
+        "name": "module",
+        "label": "Module"
+      }
+    ],
+    "workflow": [
+      {
+        "id": 1,
+        "name": "workflow",
+        "label": "Workflow"
+      },
+      {
+        "id": 2,
+        "name": "group",
+        "label": "Group"
+      },
+      {
+        "id": 3,
+        "name": "module",
+        "label": "Module"
+      },
+      {
+        "id": 4,
+        "name": "status",
+        "label": "Status"
+      }
+    ]
+  }
+
+}

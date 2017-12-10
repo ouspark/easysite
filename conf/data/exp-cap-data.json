@@ -1,0 +1,74 @@
+[
+  {
+    "cap": "cap_1",
+    "alias": "alias_1",
+    "module": "module_1",
+    "status": "status_1"
+  },
+  {
+    "cap": "cap_2",
+    "alias": "alias_2",
+    "module": "module_2",
+    "status": "status_2"
+  },
+  {
+    "cap": "cap_3",
+    "alias": "alias_3",
+    "module": "module_3",
+    "status": "status_3"
+  },
+  {
+    "cap": "cap_4",
+    "alias": "alias_4",
+    "module": "module_4",
+    "status": "status_4"
+  },
+  {
+    "cap": "cap_5",
+    "alias": "alias_5",
+    "module": "module_5",
+    "status": "status_5"
+  },
+  {
+    "cap": "cap_6",
+    "alias": "alias_6",
+    "module": "module_6",
+    "status": "status_6"
+  },
+  {
+    "cap": "cap_7",
+    "alias": "alias_7",
+    "module": "module_7",
+    "status": "status_7"
+  },
+  {
+    "cap": "cap_8",
+    "alias": "alias_8",
+    "module": "module_8",
+    "status": "status_8"
+  },
+  {
+    "cap": "cap_9",
+    "alias": "alias_9",
+    "module": "module_9",
+    "status": "status_9"
+  },
+  {
+    "cap": "cap_10",
+    "alias": "alias_10",
+    "module": "module_10",
+    "status": "status_10"
+  },
+  {
+    "cap": "cap_11",
+    "alias": "alias_11",
+    "module": "module_11",
+    "status": "status_11"
+  },
+  {
+    "cap": "cap_12",
+    "alias": "alias_12",
+    "module": "module_12",
+    "status": "status_12"
+  }
+]

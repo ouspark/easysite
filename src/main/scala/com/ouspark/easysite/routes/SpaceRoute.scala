@@ -33,7 +33,7 @@ object SpaceRoute {
 
   val home = Home
 
-  val routes = List(home, new CPPublisher(None, None, None), Service, CPRecordType)
+  val routes = List(home, CPRecordType, new CPPublisher(None, None, None), Service)
 
   val route = Route.Hash[Space](home)(
     new Route.Format[Space] {
