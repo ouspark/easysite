@@ -60,7 +60,7 @@ object Table {
       case Some(Success(rowList)) => {
         println(rowList.responseText)
         val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
-        dataCount.value = 18
+        dataCount.value = 57
         Constants(rowJson: _*).map { r =>
           FutureBinding(cols).bind match {
             case None =>
@@ -69,7 +69,6 @@ object Table {
               <tr>
                 <td><input type="checkbox" /></td>
                 {
-
                   val colJson = JSON.parse(colList.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
                   Constants(colJson: _*).map { s =>
                     <td>{ r.selectDynamic(s.name.toString).toString }</td>
@@ -88,63 +87,84 @@ object Table {
     }
   }
 
-  def activePagiClass(c: Int) = {
-    import org.scalajs.dom._
-    (1 to 5).foreach { s =>
-      val elem = document.getElementById(s"pagi-item-#${s}")
-      if(elem != null) elem.classList.remove("active")
-    }
-    document.getElementById(s"pagi-item-#${c}").classList.add("active")
-  }
-
   @dom
   def genPagination(dataCount: Var[Int]): Binding[BindingSeq[Node]] = {
 
     val pageCount: Int = if(dataCount.bind % 5 == 0) dataCount.bind / 5 else dataCount.bind / 5 + 1
     val currPage: Var[Int] = Var(1)
-    val prevClass: String = if(currPage.bind == 1) "page-item disabled" else "page-item"
-    val nextClass: String = if(currPage.bind == pageCount) "page-item disabled" else "page-item"
-      <ul class="pagination">
-        <li class={ prevClass }>
-          <a class="page-link" href="#"
-             onclick={event: Event => {
-               event.preventDefault()
-               currPage.value -= 1
-               activePagiClass(currPage.value % 5)
-             }
-             } data:aria-label="Previous">
-            <span data:aria-hidden="true">&laquo;</span>
-            <span class="sr-only">Previous</span>
-          </a>
-        </li>
-        {
-        Constants(1 to 5: _*).map { c =>
-          <li id={ s"pagi-item-#${c}" } class="page-item"><a class="page-link" href="#"
-                                          onclick={ event: Event => {
-                                            event.preventDefault();
-                                            currPage.value = c;
-                                            activePagiClass(c)
-                                          }}>{ c.toString }</a>
-          </li>
+    val cntPerPage: Var[Int] = if(pageCount - (currPage.value / 5) * 5 >= 5) Var(5) else Var(pageCount % 5)
+    val pagi: Var[Int] = Var(0)
+    val init = Map("prev" -> (-1, 1), "next" -> (1, 0)) // prev&next button (-/+, first/last - cur mod 5)
+    def paginate(p: String) = { event: Event =>
+      import org.scalajs.dom._
+      event.preventDefault()
+      def setCurrValue = {
+        val t = init.getOrElse(p, (0, 0))
+        if(t._1 != 0) {
+          if(t._2 == currPage.value % 5) {
+            pagi.value += t._1
+            cntPerPage.value = if(pageCount - pagi.value * 5 >= 5) 5 else pageCount % 5
+          }
+          currPage.value += t._1
+        } else {
+          currPage.value = p.toInt
         }
-
+      }
+      def activateClass(c: Int): Unit = {
+        (1 to cntPerPage.value).foreach { s =>
+          document.getElementById(s"pagi-item-#${s}").classList.remove("active")
         }
-        <li class={ nextClass }>
-          <a class="page-link" href="#"
-             onclick={event: Event => {
-               event.preventDefault()
-               currPage.value += 1
-               activePagiClass(currPage.value % 5)
-             }
-             } data:aria-label="Next">
-            <span data:aria-hidden="true">&raquo;</span>
-            <span class="sr-only">Next</span>
-          </a>
-        </li>
+        document.getElementById(s"pagi-item-#${c}").classList.add("active")
+      }
+      def activatePNClass = {
+        val prev = document.getElementById("pagi-prev")
+        val next = document.getElementById("pagi-next")
+        if(currPage.value == 1) {
+          prev.classList.add("disabled")
+        } else if(currPage.value == pageCount) {
+          next.classList.add("disabled")
+        } else {
+          prev.classList.remove("disabled")
+          next.classList.remove("disabled")
+        }
+      }
 
-      </ul>
+      setCurrValue
+      activatePNClass
+      activateClass(if(currPage.value % 5 == 0) 5 else currPage.value % 5 )
+    }
+
+    @dom
+    def genLi(pagi: Int, cntPerPage: Int): Binding[BindingSeq[Node]] = {
+      println("count per page: " + cntPerPage)
+      Constants(1 to cntPerPage: _*).map { c =>
+        val disValue: Int = pagi * 5 + c
+        <li id={ s"pagi-item-#${c}" } class={ if(c == currPage.value) "page-item active" else "page-item" }>
+          <a class="page-link" href="#"  onclick={ paginate(disValue.toString) }>{ disValue.toString }</a>
+        </li>
+      }
+    }
+
+    <ul class="pagination">
+      <li id="pagi-prev" class={ if(currPage.value == 1) "page-item disabled" else "page-item" }>
+        <a class="page-link" href="#" onclick={ paginate("prev") } data:aria-label="Previous">
+          <span data:aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      { genLi(pagi.bind, cntPerPage.bind).bind }
+      <li id="pagi-next" class="page-item">
+        <a class="page-link" href="#" onclick={ paginate("next") } data:aria-label="Next">
+          <span data:aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Next</span>
+        </a>
+      </li>
+    </ul>
     <!-- -->
   }
+
+
+
   @dom
   def genTable(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
     val dataCount: Var[Int] = Var(1)
