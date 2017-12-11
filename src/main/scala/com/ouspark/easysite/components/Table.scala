@@ -2,7 +2,7 @@ package com.ouspark.easysite
 package components
 
 import com.ouspark.easysite.models.TaskModel
-import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
+import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var, Vars}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
 import org.scalajs.dom.html.{Button, Table, TableRow}
 import org.scalajs.dom.raw.XMLHttpRequest
@@ -26,10 +26,9 @@ object Table {
   val nulTd = js.Array(js.Dynamic.literal("error" -> "Get Data Error"))
 
   @dom
-  def genThead(cols: Future[XMLHttpRequest]) = {
-    val selectable = true
+  def genThead(cols: Future[XMLHttpRequest], selectAll: Var[Boolean]) = {
     <tr>
-      <th data:scope="col"><input type="checkbox" /></th>
+      <th data:scope="col"><input type="checkbox" checked={ selectAll.bind } onclick={ event: Event => selectAll.value = !selectAll.value;}/></th>
       {
         FutureBinding(cols).bind match {
           case None =>
@@ -51,8 +50,8 @@ object Table {
   }
 
   @dom
-  def genTbody(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest], dataCount: Var[Int]): Binding[BindingSeq[Node]] = {
-    val selectable = true
+  def genTbody(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest], dataCount: Var[Int], currPage: Var[Int]
+               , selectAll: Var[Boolean]): Binding[BindingSeq[Node]] = {
     FutureBinding(rows).bind match {
       case None =>
         <tr><td>Loading...</td></tr>
@@ -60,14 +59,22 @@ object Table {
       case Some(Success(rowList)) => {
         println(rowList.responseText)
         val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
-        dataCount.value = 57
-        Constants(rowJson: _*).map { r =>
+        dataCount.value = rowJson.length
+        val start = (currPage.bind - 1) * 5
+        val list = Var(rowJson.jsSlice(start, start + 5))
+
+        Constants(list.bind: _*).map { r =>
+          val checked = Var(r.selectDynamic("select").asInstanceOf[Boolean])
           FutureBinding(cols).bind match {
             case None =>
               <tr><td>Loading...</td></tr>
             case Some(Success(colList)) => {
               <tr>
-                <td><input type="checkbox" /></td>
+                <td>
+                  <input type="checkbox" checked={ checked.bind } onclick={event: Event =>
+                      checked.value = !checked.value; r.updateDynamic("select")(checked.value);
+                      if(!checked.value) selectAll.value = false}/>
+                </td>
                 {
                   val colJson = JSON.parse(colList.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
                   Constants(colJson: _*).map { s =>
@@ -88,10 +95,9 @@ object Table {
   }
 
   @dom
-  def genPagination(dataCount: Var[Int]): Binding[BindingSeq[Node]] = {
+  def genPagination(currPage: Var[Int], dataCount: Var[Int]): Binding[BindingSeq[Node]] = {
 
     val pageCount: Int = if(dataCount.bind % 5 == 0) dataCount.bind / 5 else dataCount.bind / 5 + 1
-    val currPage: Var[Int] = Var(1)
     val cntPerPage: Var[Int] = if(pageCount - (currPage.value / 5) * 5 >= 5) Var(5) else Var(pageCount % 5)
     val pagi: Var[Int] = Var(0)
     val init = Map("prev" -> (-1, 1), "next" -> (1, 0)) // prev&next button (-/+, first/last - cur mod 5)
@@ -119,13 +125,23 @@ object Table {
       def activatePNClass = {
         val prev = document.getElementById("pagi-prev")
         val next = document.getElementById("pagi-next")
-        if(currPage.value == 1) {
-          prev.classList.add("disabled")
-        } else if(currPage.value == pageCount) {
-          next.classList.add("disabled")
-        } else {
-          prev.classList.remove("disabled")
-          next.classList.remove("disabled")
+        (currPage.value, pageCount) match {
+          case (1, 1) => {
+            prev.classList.add("disabled")
+            next.classList.add("disabled")
+          }
+          case (1, _) => {
+            prev.classList.add("disabled")
+            next.classList.remove("disabled")
+          }
+          case (a, b) if(a == b) => {
+            prev.classList.remove("disabled")
+            next.classList.add("disabled")
+          }
+          case (_, _) => {
+            prev.classList.remove("disabled")
+            next.classList.remove("disabled")
+          }
         }
       }
 
@@ -136,7 +152,6 @@ object Table {
 
     @dom
     def genLi(pagi: Int, cntPerPage: Int): Binding[BindingSeq[Node]] = {
-      println("count per page: " + cntPerPage)
       Constants(1 to cntPerPage: _*).map { c =>
         val disValue: Int = pagi * 5 + c
         <li id={ s"pagi-item-#${c}" } class={ if(c == currPage.value) "page-item active" else "page-item" }>
@@ -168,37 +183,27 @@ object Table {
   @dom
   def genTable(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
     val dataCount: Var[Int] = Var(1)
+    val currPage: Var[Int] = Var(1)
+    val selectAll: Var[Boolean] = Var(false)
     <table class="table table-hover">
       <thead>
         {
-          genThead(cols).bind
+          genThead(cols, selectAll).bind
         }
       </thead>
       <tbody>
         {
-          genTbody(cols, rows, dataCount).bind
+          genTbody(cols, rows, dataCount, currPage, selectAll).bind
         }
       </tbody>
     </table>
     <nav>
-      { genPagination(dataCount).bind }
+      { genPagination(currPage, dataCount).bind }
     </nav>
 
   }
 
 
-
-
-  @dom
-  def bindingButton(contact: Contact): Binding[Button] = {
-    <button class="pure-button pure-button-primary"
-    onclick={ event: Event =>
-      contact.name.value = "Modified Name"
-    }
-    >
-      Modify the name
-    </button>
-  }
 
   @dom
   def bindingTr(tpe: String, task: TaskModel): Binding[TableRow] = {
