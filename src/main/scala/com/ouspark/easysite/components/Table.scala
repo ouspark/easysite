@@ -19,16 +19,12 @@ import scala.util.{Failure, Success}
   */
 object Table {
 
-
-  case class Contact(name: Var[String], email: Var[String])
-
-  val nulTh = js.Array(js.Dynamic.literal("id" -> 1, "name" -> "error", "label" -> "Error!"))
-  val nulTd = js.Array(js.Dynamic.literal("error" -> "Get Data Error"))
-
   @dom
-  def genThead(cols: Future[XMLHttpRequest], selectAll: Var[Boolean]) = {
+  def genThead(cols: Future[XMLHttpRequest], selectAll: (Var[Int], Var[Boolean])) = {
     <tr>
-      <th data:scope="col"><input type="checkbox" checked={ selectAll.bind } onclick={ event: Event => selectAll.value = !selectAll.value;}/></th>
+      <th data:scope="col"><input type="checkbox" checked={ selectAll._2.bind } onclick={ event: Event =>
+        selectAll._2.value = !selectAll._2.value;   // (Int, Boolean) => Int -> 0: default, -1: de-select, 1: select
+        selectAll._1.value = if(selectAll._2.value) 1 else if(selectAll._1.value == 1) -1 else 0; }/></th>
       {
         FutureBinding(cols).bind match {
           case None =>
@@ -51,13 +47,12 @@ object Table {
 
   @dom
   def genTbody(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest], dataCount: Var[Int], currPage: Var[Int]
-               , selectAll: Var[Boolean]): Binding[BindingSeq[Node]] = {
+               , selectAll: (Var[Int], Var[Boolean])): Binding[BindingSeq[Node]] = {
     FutureBinding(rows).bind match {
       case None =>
         <tr><td>Loading...</td></tr>
         <!-- -->
       case Some(Success(rowList)) => {
-        println(rowList.responseText)
         val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
         dataCount.value = rowJson.length
         val start = (currPage.bind - 1) * 5
@@ -65,6 +60,12 @@ object Table {
 
         Constants(list.bind: _*).map { r =>
           val checked = Var(r.selectDynamic("select").asInstanceOf[Boolean])
+          (selectAll._1.bind) match {
+            case -1 => r.updateDynamic("select")(false); checked.value = false;
+            case 1 => r.updateDynamic("select")(true); checked.value = true;
+            case _ => r.updateDynamic("select")(checked.value);
+          }
+
           FutureBinding(cols).bind match {
             case None =>
               <tr><td>Loading...</td></tr>
@@ -72,8 +73,8 @@ object Table {
               <tr>
                 <td>
                   <input type="checkbox" checked={ checked.bind } onclick={event: Event =>
-                      checked.value = !checked.value; r.updateDynamic("select")(checked.value);
-                      if(!checked.value) selectAll.value = false}/>
+                  checked.value = !checked.value; selectAll._1.value = 0;
+                  if(!checked.value) selectAll._2.value = false; }/>
                 </td>
                 {
                   val colJson = JSON.parse(colList.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
@@ -184,7 +185,7 @@ object Table {
   def genTable(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
     val dataCount: Var[Int] = Var(1)
     val currPage: Var[Int] = Var(1)
-    val selectAll: Var[Boolean] = Var(false)
+    val selectAll: (Var[Int], Var[Boolean]) = (Var(0), Var(false))
     <table class="table table-hover">
       <thead>
         {
