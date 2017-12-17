@@ -2,14 +2,12 @@ package com.ouspark.easysite
 package components
 
 import com.ouspark.easysite.models.TaskModel
-import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var, Vars}
+import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
-import org.scalajs.dom.html.{Button, Table, TableRow}
+import org.scalajs.dom.html.{Table, TableRow}
 import org.scalajs.dom.raw.XMLHttpRequest
 import org.scalajs.dom.{Event, Node}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.scalajs.js
 import scala.scalajs.js.JSON
 import scala.util.{Failure, Success}
@@ -20,97 +18,87 @@ import scala.util.{Failure, Success}
 object Table {
 
   @dom
-  def genThead(cols: Future[XMLHttpRequest], selectAll: (Var[Int], Var[Boolean])) = {
-    <tr>
-      <th data:scope="col"><input type="checkbox" checked={ selectAll._2.bind } onclick={ event: Event =>
-        selectAll._2.value = !selectAll._2.value;   // (Int, Boolean) => Int -> 0: default, -1: de-select, 1: select
-        selectAll._1.value = if(selectAll._2.value) 1 else if(selectAll._1.value == 1) -1 else 0; }/></th>
-      {
-        FutureBinding(cols).bind match {
-          case None =>
-            <th data:scope="col">Loading</th>
-            <!-- -->
-          case Some(Success(response)) =>
-            println(response.responseText)
-
-            val resultList = JSON.parse(response.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
-            Constants(resultList: _*).map { r =>
-              <th data:scope="col">{ r.label.toString }</th>
+  def genTable(cols: js.Array[js.Dynamic], rows: FutureBinding[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
+    val dataCount: Var[Int] = Var(1)
+    val currPage: Var[Int] = Var(1)
+    val selectAll: (Var[Int], Var[Boolean]) = (Var(0), Var(false))
+    val pageSize = 3  // Row count per page
+    <table class="table table-hover">
+      <thead>
+        {
+          <tr>
+            <th data:scope="col"><input type="checkbox" checked={ selectAll._2.bind } onclick={ event: Event =>
+              selectAll._2.value = !selectAll._2.value;   // (Int, Boolean) => Int -> 0: default, -1: de-select, 1: select
+              selectAll._1.value = if(selectAll._2.value) 1 else if(selectAll._1.value == 1) -1 else 0; }/></th>
+            {
+              Constants(cols: _*).map { r =>
+                <th data:scope="col">{ r.label.toString }</th>
+              }
             }
-          case Some(Failure(exception)) =>
-            <th data:scope="col">{ exception.toString }</th>
-            <!-- -->
+          </tr>
         }
-      }
-    </tr>
-  }
-
-  @dom
-  def genTbody(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest], dataCount: Var[Int], currPage: Var[Int]
-               , selectAll: (Var[Int], Var[Boolean])): Binding[BindingSeq[Node]] = {
-    FutureBinding(rows).bind match {
-      case None =>
-        <tr><td>Loading...</td></tr>
-        <!-- -->
-      case Some(Success(rowList)) => {
-        val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
-        dataCount.value = rowJson.length
-        val start = (currPage.bind - 1) * 5
-        val list = Var(rowJson.jsSlice(start, start + 5))
-
-        Constants(list.bind: _*).map { r =>
-          val checked = Var(r.selectDynamic("select").asInstanceOf[Boolean])
-          (selectAll._1.bind) match {
-            case -1 => r.updateDynamic("select")(false); checked.value = false;
-            case 1 => r.updateDynamic("select")(true); checked.value = true;
-            case _ => r.updateDynamic("select")(checked.value);
-          }
-
-          FutureBinding(cols).bind match {
+      </thead>
+      <tbody>
+        {
+          rows.bind match {
             case None =>
               <tr><td>Loading...</td></tr>
-            case Some(Success(colList)) => {
-              <tr>
-                <td>
-                  <input type="checkbox" checked={ checked.bind } onclick={event: Event =>
-                  checked.value = !checked.value; selectAll._1.value = 0;
-                  if(!checked.value) selectAll._2.value = false; }/>
-                </td>
-                {
-                  val colJson = JSON.parse(colList.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
-                  Constants(colJson: _*).map { s =>
-                    <td>{ r.selectDynamic(s.name.toString).toString }</td>
-                  }
+              <!-- -->
+            case Some(Success(rowList)) =>
+              val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
+              dataCount.value = rowJson.length
+              val start = (currPage.bind - 1) * pageSize
+              val list = Var(rowJson.jsSlice(start, start + pageSize))
+
+              Constants(list.bind: _*).map { r =>
+                val checked = Var(r.selectDynamic("select").asInstanceOf[Boolean])
+                selectAll._1.bind match {
+                  case -1 => r.updateDynamic("select")(false); checked.value = false;
+                  case 1 => r.updateDynamic("select")(true); checked.value = true;
+                  case _ => r.updateDynamic("select")(checked.value);
                 }
-              </tr>
-            }
+                <tr>
+                  <td>
+                    <input type="checkbox" checked={ checked.bind } onclick={event: Event =>
+                    checked.value = !checked.value; selectAll._1.value = 0
+                    if(!checked.value) selectAll._2.value = false; }/>
+                  </td>
+                  {
+                    Constants(cols: _*).map { s =>
+                      <td>{ r.selectDynamic(s.name.toString).toString }</td>
+                    }
+                  }
+                </tr>
+              }
             case Some(Failure(exception)) =>
               <tr><td>{ exception.toString }</td></tr>
+              <!-- -->
           }
         }
-      }
-      case Some(Failure(exception)) =>
-        <tr><td>{ exception.toString }</td></tr>
-        <!-- -->
-    }
+      </tbody>
+    </table>
+    <nav>
+      { genPagination(currPage, dataCount, pageSize).bind }
+    </nav>
+
   }
 
   @dom
-  def genPagination(currPage: Var[Int], dataCount: Var[Int]): Binding[BindingSeq[Node]] = {
-
-    val pageCount: Int = if(dataCount.bind % 5 == 0) dataCount.bind / 5 else dataCount.bind / 5 + 1
-    val cntPerPage: Var[Int] = if(pageCount - (currPage.value / 5) * 5 >= 5) Var(5) else Var(pageCount % 5)
-    val pagi: Var[Int] = Var(0)
+  def genPagination(currPage: Var[Int], dataCount: Var[Int], pageSize: Int): Binding[BindingSeq[Node]] = {
+    val pageLis = 5  // how many pages display in pagination bar
+    val pageCount: Int = if(dataCount.bind % pageSize == 0) dataCount.bind / pageSize else dataCount.bind / pageSize + 1
+    val pagi: Var[Int] = Var(currPage.value / pageSize)
+    val cntPerPage: Var[Int] = if(pageCount - pagi.bind * pageSize >= pageLis) Var(pageLis) else Var(pageCount % pageLis)
     val init = Map("prev" -> (-1, 1), "next" -> (1, 0)) // prev&next button (-/+, first/last - cur mod 5)
     def paginate(p: String) = { event: Event =>
       import org.scalajs.dom._
       event.preventDefault()
-      def setCurrValue = {
+      def setCurrValue() = {
         val t = init.getOrElse(p, (0, 0))
         if(t._1 != 0) {
-          if(t._2 == currPage.value % 5) {
+          if(t._2 == currPage.value % pageLis) {
             pagi.value += t._1
-            cntPerPage.value = if(pageCount - pagi.value * 5 >= 5) 5 else pageCount % 5
+            cntPerPage.value = if(pageCount - pagi.value * pageSize >= pageLis) pageLis else pageCount % pageLis
           }
           currPage.value += t._1
         } else {
@@ -119,46 +107,32 @@ object Table {
       }
       def activateClass(c: Int): Unit = {
         (1 to cntPerPage.value).foreach { s =>
-          document.getElementById(s"pagi-item-#${s}").classList.remove("active")
+          document.getElementById("pagi-item-#" + s).classList.remove("active")
         }
-        document.getElementById(s"pagi-item-#${c}").classList.add("active")
+        document.getElementById("pagi-item-#" + c).classList.add("active")
       }
-      def activatePNClass = {
+      def activatePNClass() = {
         val prev = document.getElementById("pagi-prev")
         val next = document.getElementById("pagi-next")
         (currPage.value, pageCount) match {
-          case (1, 1) => {
+          case (1, 1) =>
             prev.classList.add("disabled")
             next.classList.add("disabled")
-          }
-          case (1, _) => {
+          case (1, _) =>
             prev.classList.add("disabled")
             next.classList.remove("disabled")
-          }
-          case (a, b) if(a == b) => {
+          case (a, b) if a == b =>
             prev.classList.remove("disabled")
             next.classList.add("disabled")
-          }
-          case (_, _) => {
+          case (_, _) =>
             prev.classList.remove("disabled")
             next.classList.remove("disabled")
-          }
         }
       }
 
-      setCurrValue
-      activatePNClass
-      activateClass(if(currPage.value % 5 == 0) 5 else currPage.value % 5 )
-    }
-
-    @dom
-    def genLi(pagi: Int, cntPerPage: Int): Binding[BindingSeq[Node]] = {
-      Constants(1 to cntPerPage: _*).map { c =>
-        val disValue: Int = pagi * 5 + c
-        <li id={ s"pagi-item-#${c}" } class={ if(c == currPage.value) "page-item active" else "page-item" }>
-          <a class="page-link" href="#"  onclick={ paginate(disValue.toString) }>{ disValue.toString }</a>
-        </li>
-      }
+      setCurrValue()
+      activatePNClass()
+      activateClass(if(currPage.value % pageLis == 0) pageLis else currPage.value % pageLis )
     }
 
     <ul class="pagination">
@@ -168,7 +142,14 @@ object Table {
           <span class="sr-only">Previous</span>
         </a>
       </li>
-      { genLi(pagi.bind, cntPerPage.bind).bind }
+      {
+      Constants(1 to cntPerPage.bind: _*).map { c =>
+        val disValue: Int = pagi.bind * pageLis + c
+        <li id={ "pagi-item-#" + c } class={ if(c == currPage.value) "page-item active" else "page-item" }>
+          <a class="page-link" href="#"  onclick={ paginate(disValue.toString) }>{ disValue.toString }</a>
+        </li>
+      }
+      }
       <li id="pagi-next" class="page-item">
         <a class="page-link" href="#" onclick={ paginate("next") } data:aria-label="Next">
           <span data:aria-hidden="true">&raquo;</span>
@@ -178,32 +159,6 @@ object Table {
     </ul>
     <!-- -->
   }
-
-
-
-  @dom
-  def genTable(cols: Future[XMLHttpRequest], rows: Future[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
-    val dataCount: Var[Int] = Var(1)
-    val currPage: Var[Int] = Var(1)
-    val selectAll: (Var[Int], Var[Boolean]) = (Var(0), Var(false))
-    <table class="table table-hover">
-      <thead>
-        {
-          genThead(cols, selectAll).bind
-        }
-      </thead>
-      <tbody>
-        {
-          genTbody(cols, rows, dataCount, currPage, selectAll).bind
-        }
-      </tbody>
-    </table>
-    <nav>
-      { genPagination(currPage, dataCount).bind }
-    </nav>
-
-  }
-
 
 
   @dom
