@@ -4,7 +4,11 @@ package routes
 import com.ouspark.easysite.pages.{CPPublisher, CPRecordType, Home, Service}
 import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
 import com.thoughtworks.binding.{Binding, Route, dom}
+import org.scalajs.dom.Event
 import org.scalajs.dom.raw.Node
+
+import scala.scalajs.js
+
 
 trait Loc {
   def name: String
@@ -27,9 +31,23 @@ trait Space extends Loc {
 object Space {
 
   @dom def header: Binding[Node] = {
+    def clickToggle() = {event: Event =>
+      val $ = js.Dynamic.global.$
+      if($("#sidebar > ul").is(":visible").asInstanceOf[Boolean]) {
+        $("#main-content").css(js.Dynamic.literal("margin-left" -> "0px"))
+        $("#sidebar").css(js.Dynamic.literal("margin-left" -> "-210px"))
+        $("#sidebar > ul").hide()
+        $("#container").addClass("sidebar-closed")
+      } else {
+        $("#main-content").css(js.Dynamic.literal("margin-left" -> "210px"))
+        $("#sidebar > ul").show()
+        $("#sidebar").css(js.Dynamic.literal("margin-left" -> "0px"))
+        $("#container").removeClass("sidebar-closed")
+      }
+    }
     <header class="header white-bg">
       <div class="sidebar-toggle-box">
-        <div data:data-original-title="Toggle Navigation" data:data-placement="right" class="fa fa-bars tooltips"></div>
+        <div data:data-original-title="Toggle Navigation" data:data-placement="right" class="fa fa-bars tooltips" onclick={ clickToggle() }></div>
       </div>
       <!--logo start-->
       <a href={ SpaceRoute.home.link } class="logo" >CP<span> admin</span></a>

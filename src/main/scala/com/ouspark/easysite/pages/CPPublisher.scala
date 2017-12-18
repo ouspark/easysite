@@ -59,8 +59,6 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
   @dom
   override def content: Binding[Node] = {
 
-//    val mainClass = if(pType.nonEmpty && taskName.nonEmpty) "col-sm-9 ml-sm-auto col-md-10 pt-3" else "col-sm-9 col-md-10 offset-md-1"
-
     <section id="main-content">
       <section class="wrapper">
         { mainDetail(pType, taskName).bind }
