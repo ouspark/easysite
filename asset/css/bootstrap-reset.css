@@ -7,19 +7,19 @@ a:hover {
     color: #2A3542;
 }
 
-/*panel*/
-.panel {
+/*card*/
+.card {
     border: none;
     box-shadow: none;
 }
 
-.panel-heading {
+.card-header {
     border-color:#eff2f7 ;
     font-size: 16px;
     font-weight: 300;
 }
 
-.panel-title {
+.card-title {
     color: #2A3542;
     font-size: 14px;
     font-weight: 400;
@@ -294,7 +294,7 @@ ul {
 
 /*collapse*/
 
-.panel-default > .panel-heading {
+.card-default > .card-header {
     background-color: #FFFFFF;
     border-color: #DDDDDD;
     color: #797979;

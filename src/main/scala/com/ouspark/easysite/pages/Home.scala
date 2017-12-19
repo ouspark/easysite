@@ -3,7 +3,9 @@ package pages
 
 import com.ouspark.easysite.routes.Space
 import com.thoughtworks.binding.{Binding, dom}
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.raw.{HTMLElement, Node}
+
+import scala.scalajs.js
 
 object Home extends Space {
 
@@ -12,61 +14,86 @@ object Home extends Space {
   @dom
   override def content: Binding[Node] = {
     <section id="main-content">
-    <h1>Dashboard</h1>
-
-    <section class="row text-center placeholders">
-      <div class="col-6 col-sm-3 placeholder">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" data:width="200" data:height="200" class="img-fluid rounded-circle" alt="Generic placeholder thumbnail" />
-        <h4>Label</h4>
-        <div class="text-muted">Something else</div>
-      </div>
-      <div class="col-6 col-sm-3 placeholder">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" data:width="200" data:height="200" class="img-fluid rounded-circle" alt="Generic placeholder thumbnail" />
-        <h4>Label</h4>
-        <span class="text-muted">Something else</span>
-      </div>
-      <div class="col-6 col-sm-3 placeholder">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" data:width="200" data:height="200" class="img-fluid rounded-circle" alt="Generic placeholder thumbnail" />
-        <h4>Label</h4>
-        <span class="text-muted">Something else</span>
-      </div>
-      <div class="col-6 col-sm-3 placeholder">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" data:width="200" data:height="200" class="img-fluid rounded-circle" alt="Generic placeholder thumbnail" />
-        <h4>Label</h4>
-        <span class="text-muted">Something else</span>
-      </div>
-    </section>
-
-    <h2>Section title</h2>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Header</th>
-            <th>Header</th>
-            <th>Header</th>
-            <th>Header</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1,001</td>
-            <td>Lorem</td>
-            <td>ipsum</td>
-            <td>dolor</td>
-            <td>sit</td>
-          </tr>
-          <tr>
-            <td>1,002</td>
-            <td>amet</td>
-            <td>consectetur</td>
-            <td>adipiscing</td>
-            <td>elit</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <section class="wrapper">
+        <div class="row">
+          <div class="col-md-12">
+            <section class="card tasks-widget">
+              <header class="card-header">
+                <h2>Todo List</h2>
+              </header>
+              <div class="card-body">
+                <div class="task-content">
+                  <ul id="sortable" class="task-list">
+                    <li class="list-primary">
+                      <i class=" fa fa-ellipsis-v"></i>
+                      <div class="task-checkbox">
+                        <input type="checkbox" class="list-child" value=""  />
+                      </div>
+                      <div class="task-title">
+                        <span class="task-title-sp">Flatlab is Modern Dashboard</span>
+                        <span class="badge badge-sm label-success">2 Days</span>
+                        <div class="pull-right hidden-phone">
+                          <button class="btn btn-success btn-xs fa fa-check"></button>
+                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
+                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="list-danger">
+                      <i class=" fa fa-ellipsis-v"></i>
+                      <div class="task-checkbox">
+                        <input type="checkbox" class="list-child" value=""  />
+                      </div>
+                      <div class="task-title">
+                        <span class="task-title-sp"> Fully Responsive  Bootstrap 3.0.2 Compatible </span>
+                        <span class="badge badge-sm label-danger">Done</span>
+                        <div class="pull-right hidden-phone">
+                          <button class="btn btn-success btn-xs fa fa-check"></button>
+                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
+                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="list-success">
+                      <i class=" fa fa-ellipsis-v"></i>
+                      <div class="task-checkbox">
+                        <input type="checkbox" class="list-child" value=""  />
+                      </div>
+                      <div class="task-title">
+                        <span class="task-title-sp"> Daily Standup Meeting </span>
+                        <span class="badge badge-sm label-warning">Company</span>
+                        <div class="pull-right hidden-phone">
+                          <button class="btn btn-success btn-xs fa fa-check"></button>
+                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
+                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div class=" add-task-row">
+                  <a class="btn btn-success btn-sm pull-left" href="#">Add New Tasks</a>
+                  <a class="btn btn-default btn-sm pull-right" href="#">See All Tasks</a>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
       </section>
+    </section>
+  }
+
+  @dom
+  override def install(): Unit = {
+    println("inside home")
+    import App.$
+    $("input.list-child").change({(elem: HTMLElement) => {
+      if ($(elem).is(":checked").asInstanceOf[Boolean]) {
+        $(elem).parents("li").addClass("task-done")
+      } else {
+        $(elem).parents("li").removeClass("task-done")
+      }
+    }}: js.ThisFunction)
+
   }
 }

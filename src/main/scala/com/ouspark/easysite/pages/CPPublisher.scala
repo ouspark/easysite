@@ -61,7 +61,11 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
 
     <section id="main-content">
       <section class="wrapper">
-        { mainDetail(pType, taskName).bind }
+        <div class="row">
+          <div class="col-md-12">
+            { mainDetail(pType, taskName).bind }
+          </div>
+        </div>
       </section>
     </section>
   }

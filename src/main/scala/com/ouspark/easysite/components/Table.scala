@@ -22,7 +22,7 @@ object Table {
     val dataCount: Var[Int] = Var(1)
     val currPage: Var[Int] = Var(1)
     val selectAll: (Var[Int], Var[Boolean]) = (Var(0), Var(false))
-    val pageSize = 3  // Row count per page
+    val pageSize = 10  // Row count per page
     <table class="table table-hover">
       <thead>
         {

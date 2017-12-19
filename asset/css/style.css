@@ -898,7 +898,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 .chart .heading span {
     display: block;
 }
-.panel.green-chart .chart-tittle {
+.card.green-chart .chart-tittle {
     font-size: 16px;
     padding: 15px;
     display: inline-block;
@@ -918,37 +918,37 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 
 }
 
-.panel.green-chart .chart-tittle .value {
+.card.green-chart .chart-tittle .value {
     float: right;
     color: #c0f080;
 }
 
-.panel.green-chart {
+.card.green-chart {
     background: #a9d96c;
     color: #fff;
 }
 
-.panel.terques-chart {
+.card.terques-chart {
     background: #41cac0;
     color: #fff;
 }
 
-.panel.terques-chart .chart-tittle .value {
+.card.terques-chart .chart-tittle .value {
     float: right;
     color: #fff;
 }
 
-.panel.terques-chart .chart-tittle .value a {
+.card.terques-chart .chart-tittle .value a {
     color: #fff;
     font-size: 12px;
 }
 
-.panel.terques-chart .chart-tittle .value a:hover, .panel.terques-chart .chart-tittle .value a.active {
+.card.terques-chart .chart-tittle .value a:hover, .card.terques-chart .chart-tittle .value a.active {
     color: #55f2e7;
     font-size: 12px;
 }
 
-.panel.terques-chart .chart-tittle {
+.card.terques-chart .chart-tittle {
     font-size: 16px;
     padding: 15px;
     display: inline-block;
@@ -965,7 +965,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 
 /**/
 
-.panel-body.chart-texture {
+.card-body.chart-texture {
     background: url("../img/chart-texture.jpg");
     -webkit-border-radius: 4px 4px 0px 0px;
     border-radius: 4px 4px 0px 0px;
@@ -1044,7 +1044,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
     color: #a4abbb;
 }
 
-.progress-panel {
+.progress-card {
     padding-bottom: 5px;
 }
 
@@ -1132,7 +1132,7 @@ h3.timeline-title {
     margin: 0 0 5px;
 }
 
-.timeline-desk .panel {
+.timeline-desk .card {
     display: block;
     margin-left: 25px;
     position: relative;
@@ -1279,7 +1279,7 @@ h3.timeline-title {
     color: #EF6F66;
 }
 
-.timeline-desk .panel {
+.timeline-desk .card {
     margin-bottom: 5px;
 }
 
@@ -1299,7 +1299,7 @@ h3.timeline-title {
 }
 
 
-.timeline-item.alt .panel {
+.timeline-item.alt .card {
     margin-left: 0;
     margin-right: 25px;
 }
@@ -1386,7 +1386,7 @@ h3.timeline-title {
     height: 10px;
 }
 
-.panel-footer.revenue-foot {
+.card-footer.revenue-foot {
     background-color: #e6e7ec;
     -webkit-border-radius: 0px 0px 4px 4px;
     border-radius: 0px 0px 4px 4px;
@@ -1398,37 +1398,37 @@ h3.timeline-title {
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
     /* Safari and Chrome */
-    .panel-footer.revenue-foot {
+    .card-footer.revenue-foot {
         margin-bottom: -4px;
     }
     }
 
 
-.panel-footer.revenue-foot ul  {
+.card-footer.revenue-foot ul  {
     margin: 0;
     padding: 0;
     width: 100%;
     display: inline-flex;
 }
 
-.panel-footer.revenue-foot ul li {
+.card-footer.revenue-foot ul li {
     float: left;
     width: 33.33%;
 }
 
-.panel-footer.revenue-foot ul li.first a:hover, .panel-footer.revenue-foot ul li.first a {
+.card-footer.revenue-foot ul li.first a:hover, .card-footer.revenue-foot ul li.first a {
     /*-webkit-border-radius: 0px 0px 0px 4px;*/
     border-radius: 0px 0px 0px 4px;
 }
 
-.panel-footer.revenue-foot ul li.last a:hover, .panel-footer.revenue-foot ul li.last a {
+.card-footer.revenue-foot ul li.last a:hover, .card-footer.revenue-foot ul li.last a {
     -webkit-border-radius: 0px 0px 4px 0px;
     border-radius: 0px 0px 4px 0px;
     border-right: none;
 
 }
 
-.panel-footer.revenue-foot ul li a{
+.card-footer.revenue-foot ul li a{
     display: inline-block;
     width: 100%;
     padding: 14px 15px;
@@ -1437,17 +1437,17 @@ h3.timeline-title {
     color: #797979;
 }
 
-.panel-footer.revenue-foot ul li a:hover, .panel-footer.revenue-foot ul li.active a {
+.card-footer.revenue-foot ul li a:hover, .card-footer.revenue-foot ul li.active a {
     background: #fff;
     position: relative;
 }
 
-.panel-footer.revenue-foot ul li a i {
+.card-footer.revenue-foot ul li a i {
     color: #c6cad5;
     display: block;
     font-size: 16px;
 }
-.panel-footer.revenue-foot ul li a:hover i, .panel-footer.revenue-foot ul li.active a i {
+.card-footer.revenue-foot ul li a:hover i, .card-footer.revenue-foot ul li.active a i {
     color: #ff6c60;
     display: block;
     font-size: 16px;
@@ -2421,12 +2421,12 @@ ul.inbox-pagination li {
     font-size: 16px;
 }
 
-.profile-info .panel-footer {
+.profile-info .card-footer {
     background-color:#f8f7f5 ;
     border-top: 1px solid #e7ebee;
 }
 
-.profile-info .panel-footer ul li a {
+.profile-info .card-footer ul li a {
     color: #7a7a7a;
 }
 
@@ -2644,12 +2644,12 @@ ul.summary-list > li:last-child  {
     position: relative;
 }
 
-.activity.alt .activity-desk .panel {
+.activity.alt .activity-desk .card {
     float: right;
     position: relative;
 }
 
-.activity-desk .panel {
+.activity-desk .card {
     background: #F4F4F4 ;
     display: inline-block;
 }
@@ -2731,9 +2731,9 @@ ul.amounts li {
     margin-bottom: 30px;
 }
 
-/*panel heading color*/
+/*card heading color*/
 
-.panel-primary > .panel-heading.navyblue {
+.card-primary > .card-header.navyblue {
     background-color: #2A3542;
     border-color: #2A3542;
     color: #FFFFFF;
@@ -2949,7 +2949,7 @@ ul.amounts li {
     height: 12px;
 }
 
-.panel-heading .nav {
+.card-header .nav {
     border: medium none;
     font-size: 13px;
     margin: -10px -15px -11px;
@@ -2962,22 +2962,22 @@ ul.amounts li {
     border-bottom: none;
 }
 
-.panel-heading .nav > li > a,
-.panel-heading .nav > li.active > a, .panel-heading .nav > li.active > a:hover, .panel-heading .nav > li.active > a:focus {
+.card-header .nav > li > a,
+.card-header .nav > li.active > a, .card-header .nav > li.active > a:hover, .card-header .nav > li.active > a:focus {
     border-width: 0;
     border-radius: 0;
 }
 
-.panel-heading .nav > li > a {
+.card-header .nav > li > a {
     color: #fff;
 }
 
-.panel-heading .nav > li.active > a, .panel-heading .nav > li > a:hover {
+.card-header .nav > li.active > a, .card-header .nav > li > a:hover {
     color: #47596f;
     background: #fff;
 }
 
-.panel-heading .nav > li:first-child.active > a, .panel-heading .nav > li:first-child > a:hover {
+.card-header .nav > li:first-child.active > a, .card-header .nav > li:first-child > a:hover {
     border-radius: 4px 0 0 0;
     -webkit-border-radius: 4px 0 0 0;
 }
@@ -2987,17 +2987,17 @@ ul.amounts li {
     height: 38px;
 }
 
-.panel-heading.tab-right .nav > li:first-child.active > a, .tab-right.panel-heading .nav > li:first-child > a:hover {
+.card-header.tab-right .nav > li:first-child.active > a, .tab-right.card-header .nav > li:first-child > a:hover {
     border-radius:  0 ;
     -webkit-border-radius: 0 ;
 }
 
-.panel-heading.tab-right .nav > li:last-child.active > a, .tab-right.panel-heading .nav > li:last-child > a:hover {
+.card-header.tab-right .nav > li:last-child.active > a, .tab-right.card-header .nav > li:last-child > a:hover {
     border-radius:  0 4px 0 0;
     -webkit-border-radius: 0 4px 0 0;
 }
 
-.panel-heading.tab-right .nav-tabs > li > a {
+.card-header.tab-right .nav-tabs > li > a {
     margin-left: 1px;
     margin-right: 0px;
 }
@@ -4906,7 +4906,7 @@ tr.odd.gradeX td.sorting_1, tr.even.gradeX td.sorting_1, table.display tr.even.g
 
 /*dragable portlet*/
 
-.sortable .panel .panel-heading{
+.sortable .card .card-header{
     cursor: move;
 }
 
