@@ -1,7 +1,9 @@
 package com.ouspark.easysite
 package pages
 
+import com.ouspark.easysite.models._
 import com.ouspark.easysite.routes.Space
+import com.thoughtworks.binding.Binding.Constants
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.raw.{HTMLElement, Node}
 
@@ -10,6 +12,11 @@ import scala.scalajs.js
 object Home extends Space {
 
   override def name: String = "home"
+
+  val tasks = List(Todo("Flatlab is Modern Dashboard", Critical, Some("2 Day"), false)
+                  , Todo("Fully Responsive  Bootstrap 3.0.2 Compatible", High, Some("Done"), false)
+                  , Todo("Daily Standup Meeting", Medium, Some("Company"), false),
+                    Todo("This is a test task", Low, Some("Full Day"), true))
 
   @dom
   override def content: Binding[Node] = {
@@ -24,51 +31,25 @@ object Home extends Space {
               <div class="card-body">
                 <div class="task-content">
                   <ul id="sortable" class="task-list">
-                    <li class="list-primary">
-                      <i class=" fa fa-ellipsis-v"></i>
-                      <div class="task-checkbox">
-                        <input type="checkbox" class="list-child" value=""  />
-                      </div>
-                      <div class="task-title">
-                        <span class="task-title-sp">Flatlab is Modern Dashboard</span>
-                        <span class="badge badge-sm label-success">2 Days</span>
-                        <div class="pull-right hidden-phone">
-                          <button class="btn btn-success btn-xs fa fa-check"></button>
-                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
-                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="list-danger">
-                      <i class=" fa fa-ellipsis-v"></i>
-                      <div class="task-checkbox">
-                        <input type="checkbox" class="list-child" value=""  />
-                      </div>
-                      <div class="task-title">
-                        <span class="task-title-sp"> Fully Responsive  Bootstrap 3.0.2 Compatible </span>
-                        <span class="badge badge-sm label-danger">Done</span>
-                        <div class="pull-right hidden-phone">
-                          <button class="btn btn-success btn-xs fa fa-check"></button>
-                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
-                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
-                        </div>
-                      </div>
-                    </li>
-                    <li class="list-success">
-                      <i class=" fa fa-ellipsis-v"></i>
-                      <div class="task-checkbox">
-                        <input type="checkbox" class="list-child" value=""  />
-                      </div>
-                      <div class="task-title">
-                        <span class="task-title-sp"> Daily Standup Meeting </span>
-                        <span class="badge badge-sm label-warning">Company</span>
-                        <div class="pull-right hidden-phone">
-                          <button class="btn btn-success btn-xs fa fa-check"></button>
-                          <button class="btn btn-primary btn-xs fa fa-pencil"></button>
-                          <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
-                        </div>
-                      </div>
-                    </li>
+                    {
+                      Constants(tasks: _*).map { s =>
+                        <li class={ if (s.complete) s"${s.prior.liClass} task-done" else s.prior.liClass }>
+                          <i class=" fa fa-ellipsis-v"></i>
+                          <div class="task-checkbox">
+                            <input type="checkbox" class="list-child" value="" checked={ s.complete } />
+                          </div>
+                          <div class="task-title">
+                            <span class="task-title-sp">{ s.title }</span>
+                            <span class={ s"badge badge-sm ${s.prior.spanClass}" }>{ s.label.getOrElse("") }</span>
+                            <div class="pull-right hidden-phone">
+                              <button class="btn btn-success btn-xs fa fa-check"></button>
+                              <button class="btn btn-primary btn-xs fa fa-pencil"></button>
+                              <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
+                            </div>
+                          </div>
+                        </li>
+                      }
+                    }
                   </ul>
                 </div>
                 <div class=" add-task-row">
@@ -85,7 +66,6 @@ object Home extends Space {
 
   @dom
   override def install(): Unit = {
-    println("inside home")
     import App.$
     $("input.list-child").change({(elem: HTMLElement) => {
       if ($(elem).is(":checked").asInstanceOf[Boolean]) {
@@ -95,5 +75,7 @@ object Home extends Space {
       }
     }}: js.ThisFunction)
 
+    $( "#sortable" ).sortable()
+    $( "#sortable" ).disableSelection()
   }
 }
