@@ -1,9 +1,15 @@
+import scala.languageFeature.reflectiveCalls
 
 enablePlugins(ScalaJSPlugin)
 
 organization := "com.ouspark"
 name := "easysite"
 version := "0.1.0"
+
+scalacOptions ++= Seq(
+  "-feature",
+  "-language:reflectiveCalls"
+)
 
 scalaVersion := "2.12.3"
 
@@ -12,9 +18,7 @@ libraryDependencies ++= Seq(
   "com.thoughtworks.binding" %%% "route" % "11.0.0-M4",
   "com.thoughtworks.binding" %%% "futurebinding" % "11.0.0-M4",
   "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
-  "io.suzaku" %%% "boopickle" % "1.2.6",
-  "com.lihaoyi" %%% "autowire" % "0.2.6",
-  "be.doeraene" %%% "scalajs-jquery" % "0.9.2"
+  "com.lihaoyi" %% "upickle" % "0.5.1"
 )
 
 skip in packageJSDependencies := false

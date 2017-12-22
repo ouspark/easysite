@@ -1,0 +1,20 @@
+[
+  {
+    "title": "This is the first todo item",
+    "prior": {
+      "liClass": "list-danger",
+      "spanClass": "label-danger"
+    },
+    "label": "2 Day",
+    "complete": false
+  },
+  {
+    "title": "This is the second todo item",
+    "prior": {
+      "liClass": "list-primary",
+      "spanClass": "label-primary"
+    },
+    "label": "1 Day",
+    "complete": true
+  }
+]
