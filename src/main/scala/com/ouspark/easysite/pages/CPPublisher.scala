@@ -59,12 +59,31 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
   @dom
   override def content: Binding[Node] = {
 
+    def breadcrumb = Binding {
+      if(!pType.isEmpty) {
+        <li class="breadcrumb-item active" data:aria-current="page">{ pType.get }</li>
+        <li class="breadcrumb-item"><a href={ s"#publiser/${pType.get}/${taskName.get}/summary" }>{ taskName.get }</a></li>
+        <li class="breadcrumb-item active" data:aria-current="page">{ feature.get }</li>
+      } else {
+        <!-- -->
+        <!-- -->
+      }
+    }
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
-          <div class="col-md-12">
-            { mainDetail(pType, taskName).bind }
+          <div class="col-lg-12">
+            <nav data:aria-label="breadcrumb" data:role="navigation">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href={ SpaceRoute.home.link }><i class="fa fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="#publisher">Data Manager</a></li>
+                { breadcrumb.bind }
+              </ol>
+            </nav>
           </div>
+        </div>
+        <div class="row">
+         { mainDetail(pType, taskName).bind }
         </div>
       </section>
     </section>
@@ -74,34 +93,42 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
   @dom
   def mainDetail(pType: Option[String], taskName: Option[String]): Binding[BindingSeq[Node]] = {
     if(SpaceRoute.pages.bind.name.endsWith("publisher")) {
-      <h1>Data Manager</h1>
-      <div class="table-responsive">
-        <div id="accordion" data:role="tablist">
-          {
-          for(card <- cardList) yield {
-            Card.cards(card).bind
-          }
-          }
+      <div class="col-md-12">
+        <h1>Data Manager</h1>
+        <div class="table-responsive">
+          <div id="accordion" data:role="tablist">
+            {
+            for(card <- cardList) yield {
+              Card.cards(card).bind
+            }
+            }
+          </div>
         </div>
       </div>
+      <!-- -->
     } else if(!SpaceRoute.pages.bind.name.endsWith("summary")) {
       val colsB = FutureBinding(Api.get("conf/data/table.json"))
       val rowsB = FutureBinding(Api.get("conf/data/exp-cap-data.json"))
-      <h1>{ feature.get }</h1>
-      <div>
-        {
-          colsB.bind match {
-            case None => <div>Loading...</div>
-            case Some(Success(cols)) =>
-              val resultList = JSON.parse(cols.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
-              <div>{ genTable(resultList, rowsB).bind }</div>
-            case Some(Failure(exception)) => <div>{ exception.toString }</div>
+      <div class="col-md-12">
+        <h1>{ feature.get }</h1>
+        <div>
+          {
+            colsB.bind match {
+              case None => <div>Loading...</div>
+              case Some(Success(cols)) =>
+                val resultList = JSON.parse(cols.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
+                <div>{ genTable(resultList, rowsB).bind }</div>
+              case Some(Failure(exception)) => <div>{ exception.toString }</div>
+            }
           }
-        }
+        </div>
       </div>
+      <!-- -->
     }
     else {
-      <h1>{ feature.get }</h1>
+      <div class="col-md-12">
+        <h1>{ feature.get }</h1>
+      </div>
       <!-- -->
     }
   }
