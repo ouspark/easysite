@@ -2,6 +2,7 @@ package com.ouspark.easysite
 package pages
 
 import com.ouspark.easysite.App.$
+import com.ouspark.easysite.components.Modal
 import com.ouspark.easysite.models._
 import com.ouspark.easysite.routes.Space
 import com.thoughtworks.binding.Binding.{Constants, Var, Vars}
@@ -21,6 +22,9 @@ object Home extends Space {
 
   @dom
   override def content: Binding[Node] = {
+    val localTodo = LocalStorage(localStorage)
+    var todos = Vars.empty[Todo]
+    val editT = Var(Todo("", Low, ""))
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
@@ -42,6 +46,10 @@ object Home extends Space {
                         $(elem).parents("li").removeClass("task-done")
                       }
                     }
+                    def editTodo(s: Todo, todos: Vars[Todo]) = { event: Event =>
+                      editT.value = s
+                      $("#addTaskModal").modal("show")
+                    }
                     @dom
                     def item(s: Todo, todos: Vars[Todo]) = {
                       <li class={if (s.complete) s"${s.prior.liClass} task-done" else s.prior.liClass}>
@@ -58,16 +66,16 @@ object Home extends Space {
                           </span>
                           <div class="pull-right hidden-phone">
                             <button class="btn btn-success btn-xs fa fa-check"></button>
-                            <button class="btn btn-primary btn-xs fa fa-pencil"></button>
-                            <button class="btn btn-danger btn-xs fa fa-trash-o"></button>
+                            <button class="btn btn-primary btn-xs fa fa-pencil" onclick={ editTodo(s, todos) }></button>
+                            <button class="btn btn-danger btn-xs fa fa-trash-o" onclick={event: Event => todos.value.remove(todos.value.indexOf(s)) }></button>
                           </div>
                         </div>
                       </li>
                     }
-                    val localTodo = LocalStorage(localStorage)
+
                     if(!localTodo.isEmpty) {
                       import upickle.default._
-                      val todos = Vars[Todo](localTodo.toSeq.flatMap(read[Seq[Todo]]): _*)
+                      todos = Vars[Todo](localTodo.toSeq.flatMap(read[Seq[Todo]]): _*)
                       def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
                       autoSave.watch()
                       Constants(todos.all.bind: _*).map { s =>
@@ -80,7 +88,7 @@ object Home extends Space {
                         case Some(Success(response)) =>
                           import upickle.default._
                           LocalStorage(localStorage) = response.responseText
-                          val todos = Vars[Todo](read[List[Todo]](response.responseText): _*)
+                          todos = Vars[Todo](read[List[Todo]](response.responseText): _*)
 
                           def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
                           autoSave.watch()
@@ -96,27 +104,11 @@ object Home extends Space {
                   </ul>
                 </div>
                 <div class=" add-task-row">
-                  <a class="btn btn-success btn-sm pull-left" data:data-toggle="modal" href="#myModal2">Add New Tasks</a>
+                  <a class="btn btn-success btn-sm pull-left" data:data-toggle="modal" href="#addTaskModal">Add New Tasks</a>
                   <a class="btn btn-default btn-sm pull-right" href="#">See All Tasks</a>
                 </div>
-                <div class="modal fade" id="myModal2" data:tabindex="-1" data:role="dialog" data:aria-labelledby="myModalLabel" data:aria-hidden="true">
-                  <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h4 class="modal-title">Modal Tittle</h4>
-                        <button type="button" class="close" data:data-dismiss="modal" data:aria-hidden="true">&times;</button>
-                      </div>
-                      <div class="modal-body">
-
-                        Body goes here...
-
-                      </div>
-                      <div class="modal-footer">
-                        <button data:data-dismiss="modal" class="btn btn-default" type="button">Close</button>
-                        <button class="btn btn-warning" type="button"> Confirm</button>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  { Modal("addTaskModal", "lg", Modal.newTaskModal("addTaskModal", "Add New Task", editT.bind, todos)).bind }
                 </div>
               </div>
             </section>
@@ -139,13 +131,13 @@ object Home extends Space {
 
     $( "#sortable" ).sortable()
     $( "#sortable" ).disableSelection()
-    import upickle.default._
-    val tasks = List(Todo("Flatlab is Modern Dashboard", Critical)
-      , Todo("Fully Responsive  Bootstrap 3.0.2 Compatible", High, "Done")
-      , Todo("Daily Standup Meeting", Medium, "Company"),
-      Todo("This is a test task", Low, "Full Day", true))
-    println(write[List[Todo]](tasks))
-    val str = """{"title":"Flatlab is Modern Dashboard","prior":{"liClass":"list-danger","spanClass":"label-danger"},"complete":false}"""
-    println(read[Todo](str).title)
+//    import upickle.default._
+//    val tasks = List(Todo("Flatlab is Modern Dashboard", Critical)
+//      , Todo("Fully Responsive  Bootstrap 3.0.2 Compatible", High, "Done")
+//      , Todo("Daily Standup Meeting", Medium, "Company"),
+//      Todo("This is a test task", Low, "Full Day", true))
+//    println(write[List[Todo]](tasks))
+//    val str = """{"title":"Flatlab is Modern Dashboard","prior":{"liClass":"list-danger","spanClass":"label-danger"},"complete":false}"""
+//    println(read[Todo](str).title)
   }
 }
