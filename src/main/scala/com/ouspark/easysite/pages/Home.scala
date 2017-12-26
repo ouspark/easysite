@@ -23,8 +23,12 @@ object Home extends Space {
   @dom
   override def content: Binding[Node] = {
     val localTodo = LocalStorage(localStorage)
-    var todos = Vars.empty[Todo]
-    val editT = Var(Todo("", Low, ""))
+    val todos = Vars.empty[Todo]
+    val defaultTodo = Todo("", Low, "")
+    val modalId = "addTaskModal"
+    val modalSize = "lg"
+    val modalTitle = Var("Add New Task")
+    val editT = Var(defaultTodo)
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
@@ -47,8 +51,9 @@ object Home extends Space {
                       }
                     }
                     def editTodo(s: Todo, todos: Vars[Todo]) = { event: Event =>
+                      modalTitle.value = "Edit Task"
                       editT.value = s
-                      $("#addTaskModal").modal("show")
+                      $(s"#${modalId}").modal("show")
                     }
                     @dom
                     def item(s: Todo, todos: Vars[Todo]) = {
@@ -65,7 +70,8 @@ object Home extends Space {
                             {s.label}
                           </span>
                           <div class="pull-right hidden-phone">
-                            <button class="btn btn-success btn-xs fa fa-check"></button>
+                            <button class="btn btn-success btn-xs fa fa-check" onclick={event: Event =>
+                              todos.value(todos.value.indexOf(s)) = Todo(s.title, s.prior, s.label, !s.complete)}></button>
                             <button class="btn btn-primary btn-xs fa fa-pencil" onclick={ editTodo(s, todos) }></button>
                             <button class="btn btn-danger btn-xs fa fa-trash-o" onclick={event: Event => todos.value.remove(todos.value.indexOf(s)) }></button>
                           </div>
@@ -75,7 +81,7 @@ object Home extends Space {
 
                     if(!localTodo.isEmpty) {
                       import upickle.default._
-                      todos = Vars[Todo](localTodo.toSeq.flatMap(read[Seq[Todo]]): _*)
+                      todos.value ++= localTodo.toSeq.flatMap(read[Seq[Todo]])
                       def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
                       autoSave.watch()
                       Constants(todos.all.bind: _*).map { s =>
@@ -88,7 +94,7 @@ object Home extends Space {
                         case Some(Success(response)) =>
                           import upickle.default._
                           LocalStorage(localStorage) = response.responseText
-                          todos = Vars[Todo](read[List[Todo]](response.responseText): _*)
+                          todos.value ++= read[List[Todo]](response.responseText)
 
                           def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
                           autoSave.watch()
@@ -104,11 +110,12 @@ object Home extends Space {
                   </ul>
                 </div>
                 <div class=" add-task-row">
-                  <a class="btn btn-success btn-sm pull-left" data:data-toggle="modal" href="#addTaskModal">Add New Tasks</a>
+                  <a class="btn btn-success btn-sm pull-left" data:data-toggle="modal" href="#" onclick={event: Event =>
+                  event.preventDefault(); editT.value = defaultTodo; $(s"#${modalId}").modal("show")}>Add New Tasks</a>
                   <a class="btn btn-default btn-sm pull-right" href="#">See All Tasks</a>
                 </div>
                 <div>
-                  { Modal("addTaskModal", "lg", Modal.newTaskModal("addTaskModal", "Add New Task", editT.bind, todos)).bind }
+                  { Modal.taskModal(modalId, modalTitle.bind, modalSize, editT.bind, todos).bind }
                 </div>
               </div>
             </section>
@@ -131,13 +138,5 @@ object Home extends Space {
 
     $( "#sortable" ).sortable()
     $( "#sortable" ).disableSelection()
-//    import upickle.default._
-//    val tasks = List(Todo("Flatlab is Modern Dashboard", Critical)
-//      , Todo("Fully Responsive  Bootstrap 3.0.2 Compatible", High, "Done")
-//      , Todo("Daily Standup Meeting", Medium, "Company"),
-//      Todo("This is a test task", Low, "Full Day", true))
-//    println(write[List[Todo]](tasks))
-//    val str = """{"title":"Flatlab is Modern Dashboard","prior":{"liClass":"list-danger","spanClass":"label-danger"},"complete":false}"""
-//    println(read[Todo](str).title)
   }
 }

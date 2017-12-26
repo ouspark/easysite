@@ -77,7 +77,7 @@ object Table {
         }
       </tbody>
     </table>
-    <nav>
+    <nav class="dataTables_paginate paging_bootstrap pagination">
       { genPagination(currPage, dataCount, pageSize).bind }
     </nav>
 

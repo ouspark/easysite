@@ -15,11 +15,13 @@ object Todo {
 case class Prior(liClass: String, spanClass: String)
 object Prior {
   implicit def rwPrior: RW[Prior] = macroRW
+
+  val priorList = List(("critical", Critical), ("high", High), ("medium", Medium), ("low", Low))
 }
 object Critical extends Prior("list-danger", "label-danger")
 object High extends Prior("list-warning", "label-warning")
 object Medium extends Prior("list-info", "label-info")
-object Low extends Prior("list-label", "label-inverse")
+object Low extends Prior("list-primary", "label-primary")
 
 
 

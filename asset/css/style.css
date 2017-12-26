@@ -329,6 +329,7 @@ ul.sidebar-menu li a.active i {
 
 #main-content {
     margin-left: 210px;
+    height: 920px; /*fixed bottom footer*/
 }
 
 .header, .footer {
@@ -2807,7 +2808,7 @@ ul.amounts li {
 }
 
 .dataTables_paginate.paging_bootstrap.pagination {
-    float: right;
+    float: left;
     margin-top: -5px;
     margin-bottom: 15px;
 

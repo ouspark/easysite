@@ -80,12 +80,12 @@ object Space {
       <section class="wrapper">
         <div class="row">
           <div class="col-lg-12">
-            <!--breadcrumbs start -->
-            <ul class="breadcrumb">
-              <li><a href={ SpaceRoute.pages.bind.link }><i class="fa fa-home"></i>{ SpaceRoute.pages.bind.name.capitalize }</a></li>
-              <li class="active">{"This is " + SpaceRoute.pages.bind.name.capitalize + " page"}</li>
-            </ul>
-            <!--breadcrumbs end -->
+            <nav data:aria-label="breadcrumb" data:role="navigation">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href={ SpaceRoute.home.link }><i class="fa fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" data:aria-current="page"><a href={ SpaceRoute.pages.bind.link }>{ SpaceRoute.pages.bind.name.capitalize }</a></li>
+              </ol>
+            </nav>
           </div>
         </div>
       </section>

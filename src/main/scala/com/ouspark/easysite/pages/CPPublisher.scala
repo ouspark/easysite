@@ -62,7 +62,7 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
     def breadcrumb = Binding {
       if(!pType.isEmpty) {
         <li class="breadcrumb-item active" data:aria-current="page">{ pType.get }</li>
-        <li class="breadcrumb-item"><a href={ s"#publiser/${pType.get}/${taskName.get}/summary" }>{ taskName.get }</a></li>
+        <li class="breadcrumb-item"><a href={ s"#publisher/${pType.get}/${taskName.get}/summary" }>{ taskName.get }</a></li>
         <li class="breadcrumb-item active" data:aria-current="page">{ feature.get }</li>
       } else {
         <!-- -->

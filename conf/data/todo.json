@@ -6,15 +6,49 @@
       "spanClass": "label-danger"
     },
     "label": "2 Day",
-    "complete": false
+    "complete": true
   },
   {
     "title": "This is the second todo item",
-    "prior": {
-      "liClass": "list-primary",
-      "spanClass": "label-primary"
-    },
     "label": "1 Day",
     "complete": true
+  },
+  {
+    "title": "Fully Responsive  Bootstrap 3.0.2 Compatible",
+    "prior": {
+      "liClass": "list-warning",
+      "spanClass": "label-warning"
+    },
+    "label": "Done"
+  },
+  {
+    "title": "Modal task here",
+    "label": "Full Day",
+    "complete": true
+  },
+  {
+    "title": "This is a Modified High Task0",
+    "prior": {
+      "liClass": "list-info",
+      "spanClass": "label-info"
+    },
+    "label": "High 2 M",
+    "complete": true
+  },
+  {
+    "title": "This is a Critical Task",
+    "prior": {
+      "liClass": "list-danger",
+      "spanClass": "label-danger"
+    },
+    "label": "3 Hour"
+  },
+  {
+    "title": "Fully Responsive  Bootstrap 3.0.2 Compatible",
+    "prior": {
+      "liClass": "list-info",
+      "spanClass": "label-info"
+    },
+    "label": "Done"
   }
 ]
