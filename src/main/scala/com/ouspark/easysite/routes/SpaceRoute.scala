@@ -1,7 +1,7 @@
 package com.ouspark.easysite
 package routes
 
-import com.ouspark.easysite.pages.{CPPublisher, CPRecordType, Home, Service}
+import com.ouspark.easysite.pages._
 import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
 import com.thoughtworks.binding.{Binding, Route, dom}
 import org.scalajs.dom.Event
@@ -109,7 +109,7 @@ object SpaceRoute {
 
   val home = Home
 
-  val routes = List(home, CPRecordType, new CPPublisher(None, None, None), Service)
+  val routes = List(home, CPRecordType, new CPPublisher(None, None, None), Service, Login)
 
   val route = Route.Hash[Space](home)(
     new Route.Format[Space] {
@@ -119,6 +119,7 @@ object SpaceRoute {
           Some(new CPPublisher(Some(hash.split("/")(1)), Some(hash.split("/")(2)), Some(hash.split("/")(3))))
         case "#cap" => Some(CPRecordType)
         case "#service" => Some(Service)
+        case "#login" => Some(Login)
         case _ => Some(home)
       }
       override def apply(state: Space): String = state.name

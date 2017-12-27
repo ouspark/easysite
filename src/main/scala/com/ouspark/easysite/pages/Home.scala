@@ -57,7 +57,7 @@ object Home extends Space {
                     }
                     @dom
                     def item(s: Todo, todos: Vars[Todo]) = {
-                      <li class={if (s.complete) s"${s.prior.liClass} task-done" else s.prior.liClass}>
+                      <li class={if (s.complete) s"${s.prior.liClass} task-done" else s.prior.liClass} ondblclick={ editTodo(s, todos) }>
                         <i class=" fa fa-ellipsis-v"></i>
                         <div class="task-checkbox">
                           <input type="checkbox" class="list-child" value="" checked={ s.complete } onclick={ checkTodo(s, todos) }/>
