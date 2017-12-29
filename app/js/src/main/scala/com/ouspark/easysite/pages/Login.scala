@@ -4,7 +4,10 @@ package pages
 import com.ouspark.easysite.routes.Space
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.Event
+import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.Node
+
+import scala.util.{Failure, Success}
 
 object Login extends Space {
 
@@ -22,8 +25,19 @@ object Login extends Space {
 
   @dom
   override def content: Binding[Node] = {
+    def login(agency: String, user: String, pass: String) = { event: Event =>
+      import upickle.default._
+      import scala.concurrent.ExecutionContext.Implicits.global
+      val json =write[Map[String, String]](Map("agency" -> agency, "userId" -> user, "password" -> pass))
+      println(json)
+//      val token = Ajax.post("http://192.168.0.15:3080/apis/v4/auth/agency", json, headers = Map("Access-Control-Allow-Origin" -> "*"))
+//      token.onComplete {
+//        case Success(response) => println(response.responseText)
+//        case Failure(e) => println(e.toString)
+//      }
+    }
     <div id="main-content" style="margin: 0px">
-      <form class="form-signin" action="index.html">
+      <form class="form-signin">
         <h2 class="form-signin-heading">sign in now</h2>
         <div class="login-wrap">
           <input type="text" class="form-control" placeholder="Agency" data:autofocus="true" />
@@ -36,7 +50,7 @@ object Login extends Space {
 
             </span>
           </label>
-          <button class="btn btn-lg btn-login btn-block" type="submit">Sign in</button>
+          <button class="btn btn-lg btn-login btn-block" onclick={ login("FLAGSTAFF", "admin", "admin") }>Sign in</button>
           <p>or you can sign in via social network</p>
           <div class="login-social-link">
             <a href="index.html" class="facebook">
