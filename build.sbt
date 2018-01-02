@@ -50,7 +50,7 @@ val app = crossProject.settings(
 ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
 
 lazy val appJS = app.js.enablePlugins(ScalaJSPlugin).settings(
-  artifactPath in(Compile, fastOptJS) := baseDirectory.value / ".." / ".." / "webapp" / "js" / "fastOpt.js"
+  artifactPath in(Compile, fastOptJS) := baseDirectory.value / ".." / "jvm" / "src" / "main" / "resources" / "cpadmin" / "js" / "fastOpt.js"
   )
 lazy val appJVM = app.jvm.settings(
   (resources in Compile) += (fastOptJS in (appJS, Compile)).value.data
@@ -63,7 +63,7 @@ lazy val sharedSettings = Seq(
   watchSources := watchSources.value.filterNot(_.getPath.contains("static")).filterNot(_.getPath.contains("webapp"))
 )
 
-fork in run := true
-javaOptions in run ++= Seq(
-  "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
+//fork in run := true
+//javaOptions in run ++= Seq(
+//  "-Xms256M", "-Xmx2G", "-XX:MaxPermSize=1024M", "-XX:+UseConcMarkSweepGC")
 

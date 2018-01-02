@@ -2,7 +2,7 @@ package com.ouspark.easysite
 package components
 
 import com.ouspark.easysite.components.Table.bindingTable
-import com.ouspark.easysite.models.TaskModel
+import com.ouspark.cpadmin.TaskModel
 import com.thoughtworks.binding.Binding.Vars
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.raw.Node

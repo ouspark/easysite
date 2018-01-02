@@ -15,7 +15,7 @@ case class SideItem(feature: Seq[Feature])
 object Api {
 
   import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  val url = "conf/data/"
+  val url = "http://localhost:5000/cpadmin/data/"
 
   def get(url: String): Future[XMLHttpRequest] = Ajax.get(url)
 

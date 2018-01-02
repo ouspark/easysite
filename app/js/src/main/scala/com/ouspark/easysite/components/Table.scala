@@ -1,7 +1,7 @@
 package com.ouspark.easysite
 package components
 
-import com.ouspark.easysite.models.TaskModel
+import com.ouspark.cpadmin.TaskModel
 import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
 import org.scalajs.dom.html.{Table, TableRow}

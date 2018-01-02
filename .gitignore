@@ -30,3 +30,7 @@ shared/.jvm
 .cache
 .target
 bin/
+
+app/jvm/src/main/resources/cpadmin/js/fastOpt.js.map
+
+app/jvm/src/main/resources/cpadmin/js/fastOpt.js

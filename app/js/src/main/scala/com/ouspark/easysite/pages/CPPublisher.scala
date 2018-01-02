@@ -107,8 +107,8 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
       </div>
       <!-- -->
     } else if(!SpaceRoute.pages.bind.name.endsWith("summary")) {
-      val colsB = FutureBinding(Api.get("conf/data/table.json"))
-      val rowsB = FutureBinding(Api.get("conf/data/exp-cap-data.json"))
+      val colsB = FutureBinding(Api.get("cpadmin/data/table.json"))
+      val rowsB = FutureBinding(Api.get("cpadmin/data/exp-cap-data.json"))
       <div class="col-md-12">
         <h1>{ feature.get }</h1>
         <div>

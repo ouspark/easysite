@@ -1,13 +1,13 @@
 package com.ouspark.easysite
 package pages
 
+import com.ouspark.cpadmin.{Low, Todo}
 import com.ouspark.easysite.App.$
 import com.ouspark.easysite.components.Modal
-import com.ouspark.easysite.models._
 import com.ouspark.easysite.routes.Space
 import com.thoughtworks.binding.Binding.{Constants, Var, Vars}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
-import org.scalajs.dom.{Event, File}
+import org.scalajs.dom.{Event}
 import org.scalajs.dom.ext.{Ajax, LocalStorage}
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, Node}
 
@@ -89,7 +89,8 @@ object Home extends Space {
                       }
                     } else {
                       import scala.concurrent.ExecutionContext.Implicits.global
-                      FutureBinding(Ajax.get("conf/data/todo.json")).bind match {
+                      val api = "http://localhost:5000/todos"
+                      FutureBinding(Ajax.get(api)).bind match {
                         case None => <li>Loading...</li><!-- -->
                         case Some(Success(response)) =>
                           import upickle.default._
