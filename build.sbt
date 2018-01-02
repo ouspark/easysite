@@ -3,7 +3,6 @@ import sbt.Keys.name
 
 import scala.languageFeature.reflectiveCalls
 
-enablePlugins(ScalaJSPlugin)
 
 val akkaVersion = "2.5.8"
 val akkaHttpVersion = "10.1.0-RC1"
@@ -50,7 +49,9 @@ val app = crossProject.settings(
 
 ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
 
-lazy val appJS = app.js
+lazy val appJS = app.js.enablePlugins(ScalaJSPlugin).settings(
+  artifactPath in(Compile, fastOptJS) := baseDirectory.value / ".." / ".." / "webapp" / "js" / "fastOpt.js"
+  )
 lazy val appJVM = app.jvm.settings(
   (resources in Compile) += (fastOptJS in (appJS, Compile)).value.data
 )
@@ -59,7 +60,8 @@ lazy val appJVM = app.jvm.settings(
 
 lazy val sharedSettings = Seq(
   // File changes in `/static` should never trigger new compilation
-  watchSources := watchSources.value.filterNot(_.getPath.contains("static")))
+  watchSources := watchSources.value.filterNot(_.getPath.contains("static")).filterNot(_.getPath.contains("webapp"))
+)
 
 fork in run := true
 javaOptions in run ++= Seq(
