@@ -1,6 +1,8 @@
-{
-  "export": {
-    "recordtype": [
+[
+  {
+  "typ": "export",
+  "feature": "recordtype",
+  "cols": [
       {
         "id": 1,
         "name": "cap",
@@ -21,8 +23,12 @@
         "name": "status",
         "label": "Status"
       }
-    ],
-    "asi": [
+    ]
+  },
+  {
+    "typ": "export",
+    "feature": "asi",
+    "cols": [
       {
         "id": 1,
         "name": "asi",
@@ -44,10 +50,11 @@
         "label": "Status"
       }
     ]
-
   },
-  "import": {
-    "recordtype": [
+  {
+    "typ": "import",
+    "feature": "recordtype",
+    "cols": [
       {
         "id": 1,
         "name": "cap",
@@ -63,8 +70,12 @@
         "name": "module",
         "label": "Module"
       }
-    ],
-    "workflow": [
+    ]
+  },
+  {
+    "typ": "import",
+    "feature": "workflow",
+    "cols": [
       {
         "id": 1,
         "name": "workflow",
@@ -87,5 +98,4 @@
       }
     ]
   }
-
-}
+]

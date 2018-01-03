@@ -26,3 +26,27 @@ object Critical extends Prior("list-danger", "label-danger")
 object High extends Prior("list-warning", "label-warning")
 object Medium extends Prior("list-info", "label-info")
 object Low extends Prior("list-primary", "label-primary")
+
+case class TableCol(id: Int, name: String, label: String)
+case class TableMeta(typ: String, feature: String, cols: List[TableCol])
+object TableCol {
+  implicit def rwTableCol: RW[TableCol] = macroRW
+}
+object TableMeta {
+  implicit def rwTableMeta: RW[TableMeta] = macroRW
+}
+
+case class DataRow(var select: Boolean = false, cols: Map[String, String] = Map.empty)
+object DataRow {
+  implicit def rwDataRow: RW[DataRow] = macroRW
+}
+
+case class DMFeature(feature: String, items: List[FeatureItem])
+object DMFeature {
+  implicit def rwDMFeature: RW[DMFeature] = macroRW
+}
+
+case class FeatureItem(id: Int, name: String, label:String)
+object FeatureItem {
+  implicit def rwFeatureItem: RW[FeatureItem] = macroRW
+}

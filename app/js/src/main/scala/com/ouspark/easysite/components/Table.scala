@@ -1,15 +1,12 @@
 package com.ouspark.easysite
 package components
 
-import com.ouspark.cpadmin.TaskModel
+import com.ouspark.cpadmin.{DataRow, TableCol, TaskModel}
 import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
 import org.scalajs.dom.html.{Table, TableRow}
-import org.scalajs.dom.raw.XMLHttpRequest
 import org.scalajs.dom.{Event, Node}
 
-import scala.scalajs.js
-import scala.scalajs.js.JSON
 import scala.util.{Failure, Success}
 
 /**
@@ -18,7 +15,7 @@ import scala.util.{Failure, Success}
 object Table {
 
   @dom
-  def genTable(cols: js.Array[js.Dynamic], rows: FutureBinding[XMLHttpRequest]): Binding[BindingSeq[Node]] = {
+  def genTable(cols: List[TableCol], rows: FutureBinding[List[DataRow]]): Binding[BindingSeq[Node]] = {
     val dataCount: Var[Int] = Var(1)
     val currPage: Var[Int] = Var(1)
     val selectAll: (Var[Int], Var[Boolean]) = (Var(0), Var(false))
@@ -45,17 +42,17 @@ object Table {
               <tr><td>Loading...</td></tr>
               <!-- -->
             case Some(Success(rowList)) =>
-              val rowJson = JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
+              val rowJson = rowList//JSON.parse(rowList.responseText).asInstanceOf[js.Array[js.Dynamic]]
               dataCount.value = rowJson.length
               val start = (currPage.bind - 1) * pageSize
-              val list = Var(rowJson.jsSlice(start, start + pageSize))
+              val list = Var(rowJson.slice(start, start + pageSize))
 
               Constants(list.bind: _*).map { r =>
-                val checked = Var(r.selectDynamic("select").asInstanceOf[Boolean])
+                val checked = Var(r.select)
                 selectAll._1.bind match {
-                  case -1 => r.updateDynamic("select")(false); checked.value = false;
-                  case 1 => r.updateDynamic("select")(true); checked.value = true;
-                  case _ => r.updateDynamic("select")(checked.value);
+                  case -1 => r.select = false; checked.value = false;
+                  case 1 => r.select = true; checked.value = true;
+                  case _ => r.select = checked.value;
                 }
                 <tr>
                   <td>
@@ -65,7 +62,7 @@ object Table {
                   </td>
                   {
                     Constants(cols: _*).map { s =>
-                      <td>{ r.selectDynamic(s.name.toString).toString }</td>
+                      <td>{ r.cols.getOrElse(s.name, "") }</td>
                     }
                   }
                 </tr>

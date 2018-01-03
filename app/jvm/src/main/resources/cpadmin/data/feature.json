@@ -1,80 +1,92 @@
-{ "export": [
+[
   {
-    "id": 1,
-    "name": "summary",
-    "label": "Summary"
+    "feature": "export",
+    "items": [
+      {
+        "id": 1,
+        "name": "summary",
+        "label": "Summary"
+      },
+      {
+        "id": 2,
+        "name": "recordtype",
+        "label": "Record Type"
+      },
+      {
+        "id": 3,
+        "name": "asi",
+        "label": "Custom Fields"
+      },
+      {
+        "id": 4,
+        "name": "condition",
+        "label": "Condition"
+      },
+      {
+        "id": 5,
+        "name": "workflow",
+        "label": "Workflow"
+      },
+      {
+        "id": 6,
+        "name": "fee",
+        "label": "Fee Schedule"
+      },
+      {
+        "id": 7,
+        "name": "intake",
+        "label": "Intake Form"
+      }
+    ]
   },
   {
-    "id": 2,
-    "name": "recordtype",
-    "label": "Record Type"
+    "feature": "import",
+    "items": [
+      {
+        "id": 1,
+        "name": "summary",
+        "label": "Summary"
+      },
+      {
+        "id": 2,
+        "name": "recordtype",
+        "label": "Record Type"
+      },
+      {
+        "id": 3,
+        "name": "asi",
+        "label": "Custom Fields"
+      }
+    ]
   },
   {
-    "id": 3,
-    "name": "asi",
-    "label": "Custom Fields"
+    "feature": "delete",
+    "items": [
+      {
+        "id": 1,
+        "name": "summary",
+        "label": "Summary"
+      },
+      {
+        "id": 2,
+        "name": "recordtype",
+        "label": "Record Type"
+      }
+    ]
   },
   {
-    "id": 4,
-    "name": "condition",
-    "label": "Condition"
-  },
-  {
-    "id": 5,
-    "name": "workflow",
-    "label": "Workflow"
-  },
-  {
-    "id": 6,
-    "name": "fee",
-    "label": "Fee Schedule"
-  },
-  {
-    "id": 7,
-    "name": "intake",
-    "label": "Intake Form"
+    "feature": "standard",
+    "items": [
+      {
+        "id": 1,
+        "name": "summary",
+        "label": "Summary"
+      },
+      {
+        "id": 2,
+        "name": "recordtype",
+        "label": "Record Type"
+      }
+    ]
   }
-],
-  "import": [
-    {
-      "id": 1,
-      "name": "summary",
-      "label": "Summary"
-    },
-    {
-      "id": 2,
-      "name": "recordtype",
-      "label": "Record Type"
-    },
-    {
-      "id": 3,
-      "name": "asi",
-      "label": "Custom Fields"
-    }
-  ],
-  "delete": [
-    {
-      "id": 1,
-      "name": "summary",
-      "label": "Summary"
-    },
-    {
-      "id": 2,
-      "name": "recordtype",
-      "label": "Record Type"
-    }
-  ],
-  "standard": [
-    {
-      "id": 1,
-      "name": "summary",
-      "label": "Summary"
-    },
-    {
-      "id": 2,
-      "name": "recordtype",
-      "label": "Record Type"
-    }
-  ]
-
-}
+]

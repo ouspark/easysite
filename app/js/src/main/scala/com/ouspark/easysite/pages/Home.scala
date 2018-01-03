@@ -5,11 +5,13 @@ import com.ouspark.cpadmin.{Low, Todo}
 import com.ouspark.easysite.App.$
 import com.ouspark.easysite.components.Modal
 import com.ouspark.easysite.routes.Space
+import com.ouspark.easysite.services.Api
 import com.thoughtworks.binding.Binding.{Constants, Var, Vars}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
-import org.scalajs.dom.{Event}
-import org.scalajs.dom.ext.{Ajax, LocalStorage}
+import org.scalajs.dom.Event
+import org.scalajs.dom.ext.LocalStorage
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, Node}
+import upickle.default._
 
 import scala.languageFeature.reflectiveCalls
 import scala.scalajs.js
@@ -22,13 +24,15 @@ object Home extends Space {
 
   @dom
   override def content: Binding[Node] = {
-    val localTodo = LocalStorage(localStorage)
     val todos = Vars.empty[Todo]
     val defaultTodo = Todo("", Low, "")
     val modalId = "addTaskModal"
     val modalSize = "lg"
     val modalTitle = Var("Add New Task")
     val editT = Var(defaultTodo)
+
+    def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
+    autoSave.watch()
     <section id="main-content">
       <section class="wrapper">
         <div class="row">
@@ -79,26 +83,17 @@ object Home extends Space {
                       </li>
                     }
 
-                    if(!localTodo.isEmpty) {
-                      import upickle.default._
-                      todos.value ++= localTodo.toSeq.flatMap(read[Seq[Todo]])
-                      def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
-                      autoSave.watch()
+                    if(!LocalStorage(localStorage).isEmpty && LocalStorage(localStorage).get.length > 5) {
+                      todos.value ++= LocalStorage(localStorage).toSeq.flatMap(read[Seq[Todo]])
                       Constants(todos.all.bind: _*).map { s =>
                         item(s, todos).bind
                       }
                     } else {
                       import scala.concurrent.ExecutionContext.Implicits.global
-                      val api = "http://localhost:5000/todos"
-                      FutureBinding(Ajax.get(api)).bind match {
+                      FutureBinding(Api.getTodos).bind match {
                         case None => <li>Loading...</li><!-- -->
-                        case Some(Success(response)) =>
-                          import upickle.default._
-                          LocalStorage(localStorage) = response.responseText
-                          todos.value ++= read[List[Todo]](response.responseText)
-
-                          def autoSave: Binding[Unit] = Binding{ LocalStorage(localStorage) = write(todos.all.bind) }
-                          autoSave.watch()
+                        case Some(Success(todoList)) =>
+                          todos.value ++= todoList
 
                           Constants(todos.all.bind: _*).map { s =>
                             item(s, todos).bind

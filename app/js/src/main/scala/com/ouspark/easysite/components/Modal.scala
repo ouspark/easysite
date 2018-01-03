@@ -2,7 +2,7 @@ package com.ouspark.easysite
 package components
 
 import com.ouspark.cpadmin._
-import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Var, Vars}
+import com.thoughtworks.binding.Binding.{Constants, Var, Vars}
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.raw.{HTMLInputElement, HTMLSelectElement}
 import org.scalajs.dom.{Event, Node}

@@ -1,18 +1,20 @@
 package com.ouspark.easysite
 package pages
 
+import com.ouspark.cpadmin.FeatureItem
 import com.ouspark.easysite.components.Card
 import com.ouspark.easysite.components.Table.genTable
 import com.ouspark.easysite.routes.{Space, SpaceRoute}
 import com.ouspark.easysite.services.Api
 import com.thoughtworks.binding.Binding.{BindingSeq, Constants, Vars}
 import com.thoughtworks.binding.{Binding, FutureBinding, dom}
+import org.scalajs.dom.ext.LocalStorage
 import org.scalajs.dom.raw.Node
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scala.scalajs.js
-import scala.scalajs.js.JSON
 import scala.util.{Failure, Success}
+
+import upickle.default._
 
 class CPPublisher(pType: Option[String], taskName: Option[String], feature: Option[String]) extends Space {
   override def name: String = {
@@ -22,6 +24,7 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
 
   val cardList = Vars(Card(1, "Standard Tasks", "standard"), Card(2, "Export Tasks", "export"), Card(3, "Import Tasks", "import"), Card(4, "Delete Tasks", "delete"))
 
+  val featureStore = "features"
   @dom
   override def sidebar: Binding[Node] = {
     if(pType.nonEmpty && taskName.nonEmpty) {
@@ -32,11 +35,12 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
             case None =>
               <div>Loading</div>
             case Some(Success(resultList)) =>
+              LocalStorage(featureStore) = write[List[FeatureItem]](resultList)
               <div>
                 {Constants(resultList: _*).map { r =>
-                val className = if (SpaceRoute.pages.bind.name.endsWith(r.name.toString)) "active" else ""
+                val className = if (SpaceRoute.pages.bind.name.endsWith(r.name)) "active" else ""
                 <li>
-                  <a href={s"#publisher/${pType.get}/${taskName.get}/${r.name.toString}"} class={className}>
+                  <a href={s"#publisher/${pType.get}/${taskName.get}/${r.name}"} class={className}>
                     {r.label.toString}
                   </a>
                 </li>
@@ -61,9 +65,10 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
 
     def breadcrumb = Binding {
       if(!pType.isEmpty) {
+        val features: List[FeatureItem] = read[List[FeatureItem]](LocalStorage(featureStore).getOrElse("{}"))
         <li class="breadcrumb-item active" data:aria-current="page">{ pType.get }</li>
         <li class="breadcrumb-item"><a href={ s"#publisher/${pType.get}/${taskName.get}/summary" }>{ taskName.get }</a></li>
-        <li class="breadcrumb-item active" data:aria-current="page">{ feature.get }</li>
+        <li class="breadcrumb-item active" data:aria-current="page">{ features.filter(_.name == feature.get).head.label }</li>
       } else {
         <!-- -->
         <!-- -->
@@ -107,16 +112,17 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
       </div>
       <!-- -->
     } else if(!SpaceRoute.pages.bind.name.endsWith("summary")) {
-      val colsB = FutureBinding(Api.get("cpadmin/data/table.json"))
-      val rowsB = FutureBinding(Api.get("cpadmin/data/exp-cap-data.json"))
+      val colsB = FutureBinding(Api.getTableMeta("export", "recordtype"))
+      val rowsB = FutureBinding(Api.getDataList("todo", "todo"))
+      val features: List[FeatureItem] = read[List[FeatureItem]](LocalStorage(featureStore).getOrElse(""))
       <div class="col-md-12">
-        <h1>{ feature.get }</h1>
+        <h1>{ features.filter(_.name == feature.get).head.label }</h1>
         <div>
           {
             colsB.bind match {
               case None => <div>Loading...</div>
               case Some(Success(cols)) =>
-                val resultList = JSON.parse(cols.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
+                val resultList = cols.cols//JSON.parse(cols.responseText).selectDynamic("export").selectDynamic("recordtype").asInstanceOf[js.Array[js.Dynamic]]
                 <div>{ genTable(resultList, rowsB).bind }</div>
               case Some(Failure(exception)) => <div>{ exception.toString }</div>
             }
@@ -127,45 +133,10 @@ class CPPublisher(pType: Option[String], taskName: Option[String], feature: Opti
     }
     else {
       <div class="col-md-12">
-        <h1>{ feature.get }</h1>
+        <h1>Summary</h1>
       </div>
       <!-- -->
     }
   }
 
-
-  @dom
-  def navDiv(pType: Option[String], taskName: Option[String]): Binding[BindingSeq[Node]] = {
-    if(pType.nonEmpty && taskName.nonEmpty) {
-      <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
-        <ul class="nav nav-pills flex-column">
-          {
-
-            FutureBinding(Api.getFeatures(pType.get)).bind match {
-              case None =>
-                <div>Loading</div>
-              case Some(Success(resultList)) =>
-                <div>{
-                  Constants(resultList: _*).map { r =>
-                    val className = if (SpaceRoute.pages.bind.name.endsWith(r.name.toString)) "nav-link active" else "nav-link"
-                    <li class="nav-item">
-                      <a href={ s"#publisher/${pType.get}/${taskName.get}/${r.name.toString}" } class={className}>{r.label.toString}</a>
-                    </li>
-                    }
-                  }
-                </div>
-              case Some(Failure(exception)) =>
-                <div>{ exception.toString }</div>
-            }
-
-          }
-        </ul>
-      </nav>
-      <!-- -->
-    }
-    else {
-      <!-- -->
-      <!-- -->
-    }
-  }
 }

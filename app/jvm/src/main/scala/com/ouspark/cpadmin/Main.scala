@@ -12,6 +12,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.io.StdIn
 
 object Main extends App with RequestTimeOut {
 
@@ -33,23 +34,27 @@ object Main extends App with RequestTimeOut {
     }
 
   val routes =
-    path("todos") {
-      get {
-        complete(HttpEntity(ContentTypes.`application/json`, """[{"title":"Login page with credentials","prior":{"liClass":"list-warning","spanClass":"label-warning"}},{"title":"Figure out how Publisher deploy and connect with credentials","prior":{"liClass":"list-danger","spanClass":"label-danger"},"label":"2 Day"},{"title":"Publisher API service test out","prior":{"liClass":"list-info","spanClass":"label-info"},"label":"API"},{"title":"Task list first catch","prior":{"liClass":"list-warning","spanClass":"label-warning"},"label":"Task"},{"title":"Task Summary","prior":{"liClass":"list-info","spanClass":"label-info"},"label":"Summary"},{"title":"Task Save implementation","prior":{"liClass":"list-danger","spanClass":"label-danger"},"label":"Functionality"}]"""))
+    staticResources ~
+    pathPrefix("apis" / "v1") {
+      path("todos") {
+        get {
+          complete(HttpEntity(ContentTypes.`application/json`, """[{"title":"Login page with credentials","prior":{"liClass":"list-warning","spanClass":"label-warning"}},{"title":"Figure out how Publisher deploy and connect with credentials","prior":{"liClass":"list-danger","spanClass":"label-danger"},"label":"2 Day"},{"title":"Publisher API service test out","prior":{"liClass":"list-info","spanClass":"label-info"},"label":"API"},{"title":"Task list first catch","prior":{"liClass":"list-warning","spanClass":"label-warning"},"label":"Task"},{"title":"Task Summary","prior":{"liClass":"list-info","spanClass":"label-info"},"label":"Summary"},{"title":"Task Save implementation","prior":{"liClass":"list-danger","spanClass":"label-danger"},"label":"Functionality"}]"""))
+        }
+      } ~
+      path("feature" / Segment / Segment) { (typ, feature) =>
+        get {
+          complete(HttpEntity(ContentTypes.`application/json`, ""))
+        }
       }
-    } ~ staticResources
-
+    }
 
   val bindingFuture: Future[ServerBinding] = Http().bindAndHandle(routes, host, port)
 
   val log = Logging(system.eventStream, "cpadmin")
-  bindingFuture.map { serverBinding =>
-    log.info(s"API bound to ${serverBinding.localAddress}")
-  }.onFailure {
-    case ex: Exception =>
-      log.error(ex, "Fail to bind to {}:{}", host, port)
-      system.terminate()
-  }
+  log.info(s"API bound to {} {}", host, port)
+  StdIn.readLine()
+  bindingFuture.flatMap(_.unbind())
+    .onComplete(_ => system.terminate()) // shutdown when done
 
 }
 

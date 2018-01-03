@@ -1,45 +1,32 @@
 package com.ouspark.easysite.services
 
+import com.ouspark.cpadmin._
 import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.raw.XMLHttpRequest
+import upickle.default._
 
 import scala.concurrent.Future
-import scala.scalajs.js
-import scala.scalajs.js.JSON
 
 /**
   * Created by ouspark on 07/12/2017.
   */
-case class Feature(id: Int, name: String, label: String)
-case class SideItem(feature: Seq[Feature])
 object Api {
 
   import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-  val url = "http://localhost:5000/cpadmin/data/"
+  val biz = "http://localhost:5000"
+  val resources = "/cpadmin/data"
+  val apis = "/apis/v1"
 
-  def get(url: String): Future[XMLHttpRequest] = Ajax.get(url)
-
-
-  def getFeatures(typ: String): Future[js.Array[js.Dynamic]] = Ajax.get(url + "feature.json").flatMap { s =>
-      Future.successful(getFeatureList(typ, s.responseText))
+  def getTodos: Future[List[Todo]] = Ajax.get(biz + apis + "/todos").map { response =>
+    read[List[Todo]](response.responseText)
   }
-  def getTableMeta(typ: String, feature: String) = Ajax.get(url + "table.json").flatMap { s =>
-    Future.successful(getTableMetaList(typ, feature, s.responseText))
+  def getFeatures(typ: String): Future[List[FeatureItem]] = Ajax.get(biz + resources + "/feature.json").map{ response =>
+    read[List[DMFeature]](response.responseText).filter(_.feature == typ).head.items
   }
-
-  def getDataList(typ: String, feature: String) = Ajax.get(url + "exp-cap-data.json").flatMap { s =>
-    println(s.responseText)
-    Future.successful(JSON.parse(s.responseText).asInstanceOf[js.Array[js.Dynamic]])
+  def getTableMeta(typ: String, feature: String): Future[TableMeta] = Ajax.get(biz + resources + "/table.json").map { response =>
+    read[List[TableMeta]](response.responseText).filter(_.typ == typ).filter(_.feature == feature).head
   }
-
-
-  def getTableMetaList(typ:String, feature: String, response: String): js.Array[js.Dynamic] = {
-    println(response)
-    JSON.parse(response).selectDynamic(typ).selectDynamic(feature).asInstanceOf[js.Array[js.Dynamic]]
-
+  def getDataList(typ: String, feature: String): Future[List[DataRow]] = Ajax.get(biz + resources + "/exp-cap-data.json").map { response =>
+    read[List[DataRow]](response.responseText)
   }
 
-  def getFeatureList(typ: String, response: String): js.Array[js.Dynamic] = {
-    JSON.parse(response).selectDynamic(typ).asInstanceOf[js.Array[js.Dynamic]]
-  }
 }
